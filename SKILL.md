@@ -104,6 +104,17 @@ The user's only mid-run channel into the council is `<RUN_DIR>/INTERRUPT.md`. Th
 
 The Run-start banner (printed at the end of Step 0 Intake) tells the user this channel exists.
 
+## Iteration limits
+
+Council-wide rule: at most **one re-dispatch of subagents per phase**. If the re-dispatch doesn't converge, ship what's there and file a follow-up via `sleeper-tasks` or `sfl meta add`. Don't loop indefinitely — diminishing returns set in fast and the user is paying for tokens.
+
+**Exception:** trivial in-place fixups during the Review gate (typo-class corrections, single-line tweaks the Organizer can make directly without re-dispatching the implementer) are unlimited. The cap applies only to *re-dispatching the implementer*.
+
+Per-gate application:
+- **Plan gate** — 1 plan revision after critique; ship whichever version is strongest.
+- **Review gate** — unlimited trivial in-place fixups; 1 implementer re-dispatch for non-trivial issues; then blocker.
+- **Close gate** — 1 BP-driven re-engage; otherwise file a follow-up.
+
 ## Composition with superpowers
 
 When invoking another skill, use the `Skill` tool with the exact name. Do not re-implement.

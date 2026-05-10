@@ -9,6 +9,7 @@ Used when the goal has both code-shipping and knowledge-artifact dimensions.
    - `<run-dir>/plan/<Gn>/research.md` — using the RESEARCH-mode outline shape
    - `<run-dir>/plan/<Gn>/code.md` — produced by `superpowers:writing-plans`
 3. Run the Plan gate's critique pass on each plan.
+4. Run a BP plan pass on the research outline only (see `modes/research.md` → BP plan pass). The code plan is exempt — `superpowers:writing-plans` already constrains its shape; BP is not a code reviewer.
 
 ## Execute step
 
@@ -24,6 +25,28 @@ Two paths:
    - Research track: runs the RESEARCH-mode Execute step
    - Code track: runs the CODE-mode Execute step
 2. Wait for both to complete (or one to fail; in which case the other still runs to completion before Close).
+
+## Reconciliation step (parallel branch only)
+
+After both research and code tracks complete, before invoking the Close gate:
+
+1. Organizer reads both outputs.
+2. **If the Organizer detects tension** — research recommends approach A while code took approach B; research findings would change the code design; the wiki entry would contradict the commit message — dispatch a Critic subagent. Embed `personalities/critic.md` and append:
+
+   ```
+   RESEARCH OUTPUT (summary):
+   <draft.md highlights>
+
+   CODE OUTPUT (summary):
+   <commit summary + key file diffs>
+
+   Are these two outputs consistent? List specific conflicts and recommend a resolution.
+   ```
+
+3. Apply the Critic's resolution by editing the affected output(s) before Close.
+4. **If no tension**, skip the dispatch and proceed directly to Close.
+
+(Dependent branch is naturally serialized — research informs code — so reconciliation is implicit.)
 
 ## Close
 

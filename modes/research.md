@@ -32,6 +32,21 @@ The plan is a research outline. Write it directly to `<run-dir>/plan/<Gn>.md` wi
 
 Then run the Plan gate's critique pass on the outline.
 
+## BP plan pass
+
+After the critique pass converges, run a 30-second Beautiful Person pass on the outline:
+
+1. Dispatch a Beautiful Person subagent. Embed `personalities/beautiful-person.md` and append:
+
+   ```
+   RESEARCH OUTLINE:
+   <full outline>
+
+   Does this outline produce something a person would want to read? If yes, say so. If not, propose the smallest revision that would fix the framing.
+   ```
+
+2. Apply BP's suggestions to the outline before Execute. If BP's revision is substantive (changes the section count, reframes the target artifact), the Organizer judges whether to re-run the critique pass or accept BP's framing as-is.
+
 ## Execute step
 
 For each section in the outline, dispatch a research subagent. Use `superpowers:dispatching-parallel-agents` if there are 3+ independent sections; otherwise dispatch sequentially or in pairs.

@@ -65,6 +65,8 @@ The user gets a one-way push channel; the council never *prompts* — it just re
 
 ### P2.1 Standardize iteration limits across gates
 
+**Status:** shipped.
+
 **Problem.** Plan gate allows 1 revision; Review gate allows 3 cycles; Close gate allows 1 re-engage. The variation reads like drift, not design.
 
 **Fix.** Standardize to: **"1 re-dispatch attempt allowed; if not resolved, ship + file follow-up"**, with one exception at the Review gate: trivial in-place fixups (typo-class, single-line changes the Organizer can make directly) are unlimited; *re-dispatching the implementer* is capped at 1 attempt. Document the standard at the top of each gate.
@@ -75,6 +77,8 @@ The user gets a one-way push channel; the council never *prompts* — it just re
 **Open question.** Get user buy-in on the standard before changing anything. The "1 + trivial-unlimited" rule is one proposal; "2 cycles everywhere" is another; status quo is fine if there's a reason.
 
 ### P2.2 MIXED-mode reconciliation step
+
+**Status:** shipped.
 
 **Problem.** Research and code can run in parallel under MIXED mode and produce conflicting findings (e.g., research says use lib A; code already used lib B). Currently Beautiful Person closes both, but BP isn't qualified to resolve substantive conflicts.
 
@@ -90,6 +94,8 @@ If no conflicts, skip the dispatch and proceed directly to Close. Cheap when not
 **Risks.** False-positive conflict detection burns a subagent dispatch. Mitigated: only dispatch if the Organizer's gut says there's tension.
 
 ### P2.3 Beautiful Person at Plan stage for RESEARCH and MIXED
+
+**Status:** shipped.
 
 **Problem.** A research outline that's tonally off from the start produces sections that all need rewriting at Close — expensive.
 
