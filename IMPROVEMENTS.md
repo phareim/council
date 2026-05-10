@@ -10,6 +10,8 @@ Each item is sized **S** (≤30 min), **M** (30–90 min), or **L** (>90 min), a
 
 ### P1.1 Mid-run course-correct channel via `INTERRUPT.md`
 
+**Status:** shipped.
+
 **Problem.** Once goals are accepted, the council runs to completion. If Frame misreads a goal, the user watches 30 minutes of wrong work scroll by — there's no defined way to nudge mid-run without breaking the no-pausing rule.
 
 **Fix.** Between every gate, the Organizer checks `<run-dir>/INTERRUPT.md`. If present:
@@ -26,6 +28,8 @@ The user gets a one-way push channel; the council never *prompts* — it just re
 **Open question.** Freeform text vs. structured (`scope: G2`, `priority: high`)? Recommend freeform — the Organizer is good at parsing intent.
 
 ### P1.2 Goal Register exposes the acceptance criterion
+
+**Status:** shipped.
 
 **Problem.** Register tracks status/mode but not "what does done look like?" — that lives buried in `frame/Gn.md`. The register's value as a single-glance dashboard is reduced.
 
@@ -44,6 +48,8 @@ The user gets a one-way push channel; the council never *prompts* — it just re
 **Risks.** None.
 
 ### P1.3 Decision Log becomes load-bearing, not write-only
+
+**Status:** shipped.
 
 **Problem.** The Organizer appends to `decisions.md` after each gate, but no later step reads it. It ends up archival rather than informing later synthesis.
 

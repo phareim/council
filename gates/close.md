@@ -10,6 +10,8 @@ Per goal. Beautiful Person reviews the final outputs and produces external state
 
 ## Procedure
 
+**Before verification**, read the most recent `decisions.md` entry for `<Gn>` (typically the Plan gate's). Beautiful Person should know what trade-offs were already made before suggesting revisions.
+
 1. **Invoke `superpowers:verification-before-completion`** via the `Skill` tool to verify any concrete claims before closing (e.g. "tests pass", "the wiki entry is reachable").
 
 2. **Dispatch a single Beautiful Person subagent** (same dispatch shape as the Frame gate, including the no-dispatch-tool fallback: voice in-session if needed). Embed `personalities/beautiful-person.md` system prompt verbatim. Provide:

@@ -8,6 +8,8 @@ Per goal. Produces a mode-specific plan and re-engages Starter and Critic for pl
 
 ## Procedure
 
+**Before drafting**, read the most recent `decisions.md` entry for `<Gn>` (typically the Frame gate's). Carry its synthesis forward into your prompt to the subagents below — anchor the plan in what was already decided rather than re-deriving it.
+
 1. **Draft the plan via the mode pipeline:**
    - CODE → invoke `superpowers:writing-plans` via the `Skill` tool. The plan is saved to `docs/superpowers/plans/...` per that skill. Then ALSO copy the plan markdown into `<run-dir>/plan/<Gn>.md` for council-local reference.
    - RESEARCH → see `modes/research.md` Plan section. Write the research outline directly to `<run-dir>/plan/<Gn>.md`.

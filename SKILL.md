@@ -54,6 +54,7 @@ Read `personalities/organizer.md` and behave as the Organizer for the rest of th
    Council run started.
    Run directory: <RUN_DIR>
    Goals: G1 ... Gn
+   Mid-run course-correct: write to <RUN_DIR>/INTERRUPT.md
    ```
 
    This is the LAST stdout-only update until Report. From here on, all updates are file-based.
@@ -61,6 +62,8 @@ Read `personalities/organizer.md` and behave as the Organizer for the rest of th
 ## Step 1 — Per-goal loop
 
 For each goal G in `register.md` order:
+
+**Before each gate (steps 2–5 below), the Organizer performs the interrupt check** — see [Mid-run interrupt channel](#mid-run-interrupt-channel).
 
 1. Mark G `in-flight` in `register.md`.
 2. Run the **Frame gate** (`gates/frame.md`). Produces `frame/G<n>.md` with synthesis and Mode.
@@ -84,6 +87,22 @@ When every goal is `done` or `blocked` or `needs-revision`:
 2. Print the entire report to stdout.
 3. Save to `<RUN_DIR>/report.md`. If the running harness intercepts `Write` for files named `report.md` (some subagent harnesses do, with a "return text not files" heuristic), fall back to `cat <<'EOF' > "$RUN_DIR/report.md" … EOF` via Bash.
 4. Stop.
+
+## Mid-run interrupt channel
+
+The user's only mid-run channel into the council is `<RUN_DIR>/INTERRUPT.md`. The council never prompts the user; it just reads this file at well-defined checkpoints if it exists.
+
+**Checkpoints.** Before each gate within Step 1's per-goal loop — i.e., before Frame, before Plan, before Execute, before Close.
+
+**Procedure when found.**
+1. Read `<RUN_DIR>/INTERRUPT.md`.
+2. Treat the contents as a high-priority Critic-style intervention. Adopt it as the dominant constraint for the next gate's synthesis. Propagate to subagents in their next prompt as `EXTERNAL INTERVENTION: <verbatim contents>`.
+3. Move the file to `<RUN_DIR>/interrupts/<UTC-timestamp>.md` to preserve the audit trail.
+4. Append a Decision Log entry with `Source: user-interrupt` noted in the Context line.
+
+**Format.** Freeform markdown. The user writes whatever they need to say; the Organizer parses intent.
+
+The Run-start banner (printed at the end of Step 0 Intake) tells the user this channel exists.
 
 ## Composition with superpowers
 

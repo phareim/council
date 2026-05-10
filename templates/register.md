@@ -5,6 +5,7 @@ Run directory: <RUN_DIR_ABSOLUTE_PATH>
 
 ## G1: <GOAL_TEXT>
 - Mode: pending
+- Acceptance: pending
 - Status: pending
 - Plan: —
 - Output: —

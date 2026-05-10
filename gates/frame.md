@@ -52,6 +52,7 @@ Per goal. Produces a synthesized framing and a Mode classification.
      - Research? Does this goal produce knowledge artifacts to read later? (yes → has research dimension)
      - CODE / RESEARCH / MIXED / reject — see spec.
    - If neither dimension applies, re-run the Frame gate ONCE with a stricter prompt: `"This goal as written has neither a code change nor a knowledge artifact. Reframe it as one or both, OR explain why it cannot be."` After two failed reruns, file the goal to `sleeper-tasks` as needs-clarification and continue to the next goal.
+   - **Write a one-line Acceptance criterion** — concrete terms for what makes this goal "done", referencing mode-specific outputs (e.g. `"commit pushed to main with tests green"`, `"wiki/foo.md reachable from INDEX.md, ≥3 sources cited"`). This goes into `register.md` in step 7 below.
 
 5. **Write `<run-dir>/frame/<Gn>.md`:**
 
@@ -73,4 +74,4 @@ Per goal. Produces a synthesized framing and a Mode classification.
 
 6. **Append a Decision Log entry** to `<run-dir>/decisions.md` using `templates/decision.md`.
 
-7. **Update `register.md`**: set `Mode: <CODE|RESEARCH|MIXED>` for this goal.
+7. **Update `register.md`**: set `Mode: <CODE|RESEARCH|MIXED>` and `Acceptance: <one-line>` for this goal.
