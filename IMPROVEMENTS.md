@@ -1,5 +1,7 @@
 # Council process improvements
 
+**Status:** all items shipped (2026-05-10). Open decisions resolved: `INTERRUPT.md` is freeform; iteration-limit standard adopted as proposed (1 re-dispatch + trivial-unlimited at Review); this file kept at repo root as a record of the work.
+
 A working list of process issues identified during the post-extraction review (2026-05-10), with proposed fixes. Items are ordered by leverage — top items will compound across all future runs and should ship first.
 
 Each item is sized **S** (≤30 min), **M** (30–90 min), or **L** (>90 min), and is written so a future `/council` invocation could take its title as a goal.
@@ -111,6 +113,8 @@ If no conflicts, skip the dispatch and proceed directly to Close. Cheap when not
 
 ### P3.1 Degrade gracefully when no dispatch tool is available
 
+**Status:** shipped.
+
 **Problem.** Frame and Plan gates fall back to "voice both Starter and Critic in-session" if there's no `Agent` tool. This collapses to "Organizer thinks both ways" — exactly the averaging the synthesis discipline forbids.
 
 **Fix.** In the no-dispatch fallback, voice ONLY the Critic (adversarial-from-cold-context is hardest to fake when the same actor plays both sides). Skip Starter; the Organizer is already biased toward action by virtue of running the show, so its native voice covers the generative role adequately.
@@ -120,6 +124,8 @@ If no conflicts, skip the dispatch and proceed directly to Close. Cheap when not
 **Risks.** None — the fallback is rarely-traveled.
 
 ### P3.2 Document the per-task Review duplication
+
+**Status:** shipped.
 
 **Problem.** At the Review gate, both `superpowers:requesting-code-review` and a Critic subagent run. Looks redundant; future readers may strip one.
 

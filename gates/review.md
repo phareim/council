@@ -6,6 +6,15 @@ Used during CODE-mode execution after each task in the implementation plan.
 - Task description (from the plan)
 - Diff or commit produced by the implementer
 
+## Why two reviews
+
+The two reviews dispatched at this gate cover different concerns and are not redundant:
+
+- **`superpowers:requesting-code-review`** — structured *technical* review: correctness, conventions, test coverage, regression risk. The skill knows what good code review looks like in code terms.
+- **Critic subagent** — *assumption* review: are the premises behind this approach right? Is the task description still the right thing to be doing? Has something downstream changed that would invalidate this work?
+
+Keep both. Stripping one to "save tokens" loses the orthogonal signal — the technical reviewer won't catch a wrong-problem-being-solved, and the Critic won't catch a missing test case.
+
 ## Procedure
 
 1. **Run two reviews in parallel:**

@@ -22,7 +22,7 @@ Per goal. Produces a synthesized framing and a Mode classification.
 
    Wait for the response.
 
-2. **Dispatch Starter and Critic in parallel.** Single message, two parallel subagent dispatches via the `Agent` tool (in some harnesses called `Task`; if it appears under `ToolSearch` as a deferred tool, fetch it first with `ToolSearch select:Agent`). If the harness has no subagent-dispatch tool at all, voice both Starter and Critic in-session by reading their personality files and writing both responses into the gate artifact — synthesis discipline applies unchanged. Each call:
+2. **Dispatch Starter and Critic in parallel.** Single message, two parallel subagent dispatches via the `Agent` tool (in some harnesses called `Task`; if it appears under `ToolSearch` as a deferred tool, fetch it first with `ToolSearch select:Agent`). If the harness has no subagent-dispatch tool at all, voice ONLY the Critic in-session (read `personalities/critic.md` and write its response into the gate artifact). Skip Starter — the Organizer's native voice (already biased toward action by virtue of running the show) covers the generative role adequately, and adversarial-from-cold-context is the hardest role to fake while playing both sides. Synthesis discipline applies unchanged. Each call:
    - `subagent_type`: `general-purpose`
    - `description`: `"Frame goal <Gn>"` (Starter) or `"Critique goal <Gn>"` (Critic)
    - `prompt`: load the personality file (`personalities/starter.md` or `personalities/critic.md`) and embed the system-prompt blockquote verbatim at the top of the Agent prompt, then append:
