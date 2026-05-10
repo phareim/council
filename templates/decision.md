@@ -2,6 +2,8 @@
 
 **Context**: <one sentence on what gate / what was being decided>
 
+**Librarian said**: <one-sentence summary of prior-work findings, or "—" if not Frame gate>
+
 **Starter said**: <one-sentence summary of Starter's strongest point>
 
 **Critic said**: <one-sentence summary of Critic's strongest objection>

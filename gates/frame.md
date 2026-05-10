@@ -9,13 +9,29 @@ Per goal. Produces a synthesized framing and a Mode classification.
 
 ## Procedure
 
-1. **Dispatch Starter and Critic in parallel.** Single message, two parallel subagent dispatches via the `Agent` tool (in some harnesses called `Task`; if it appears under `ToolSearch` as a deferred tool, fetch it first with `ToolSearch select:Agent`). If the harness has no subagent-dispatch tool at all, voice both Starter and Critic in-session by reading their personality files and writing both responses into the gate artifact — synthesis discipline applies unchanged. Each call:
+1. **Dispatch the Librarian (sequential, before Starter and Critic)** — its findings become context for the parallel pair. Single subagent dispatch via the `Agent` tool. If the harness has no subagent-dispatch tool, the Organizer performs the librarian search itself per `personalities/librarian.md` and writes the result into the gate artifact's Librarian section. The dispatch:
+   - `subagent_type`: `general-purpose`
+   - `description`: `"Recall prior work for goal <Gn>"`
+   - `prompt`: load `personalities/librarian.md`, embed the system-prompt blockquote verbatim at the top, then append:
+
+     ```
+     GOAL: <goal text>
+
+     Search the surfaces listed in your personality file for prior work touching this goal. Return the format specified there.
+     ```
+
+   Wait for the response.
+
+2. **Dispatch Starter and Critic in parallel.** Single message, two parallel subagent dispatches via the `Agent` tool (in some harnesses called `Task`; if it appears under `ToolSearch` as a deferred tool, fetch it first with `ToolSearch select:Agent`). If the harness has no subagent-dispatch tool at all, voice both Starter and Critic in-session by reading their personality files and writing both responses into the gate artifact — synthesis discipline applies unchanged. Each call:
    - `subagent_type`: `general-purpose`
    - `description`: `"Frame goal <Gn>"` (Starter) or `"Critique goal <Gn>"` (Critic)
    - `prompt`: load the personality file (`personalities/starter.md` or `personalities/critic.md`) and embed the system-prompt blockquote verbatim at the top of the Agent prompt, then append:
 
      ```
      GOAL: <goal text>
+
+     LIBRARIAN FINDINGS:
+     <full Librarian response, including Recommendation>
 
      Frame this goal. Produce a markdown response with these sections:
      - **Reframing**: what is this goal really asking for, in your voice?
@@ -24,10 +40,11 @@ Per goal. Produces a synthesized framing and a Mode classification.
      - End with the personality's signature line (Top recommendation / Strongest objection)
      ```
 
-2. **Wait for both responses.**
+3. **Wait for both responses.**
 
-3. **Synthesize as Organizer:**
-   - Read both fully.
+4. **Synthesize as Organizer:**
+   - Read all three (Librarian, Starter, Critic) fully.
+   - If the Librarian found prior work that fundamentally changes what the goal is asking for — e.g., it's already done, or there's an open task — note this in the synthesis and consider revising the goal in `register.md`. In extreme cases (prior work shipped exactly this), file the goal to `sleeper-tasks` as `already-done` and move to the next goal.
    - Adopt the strongest reframing.
    - Adopt the most cogent risk.
    - **Classify the Mode** using the truth table:
@@ -36,10 +53,13 @@ Per goal. Produces a synthesized framing and a Mode classification.
      - CODE / RESEARCH / MIXED / reject — see spec.
    - If neither dimension applies, re-run the Frame gate ONCE with a stricter prompt: `"This goal as written has neither a code change nor a knowledge artifact. Reframe it as one or both, OR explain why it cannot be."` After two failed reruns, file the goal to `sleeper-tasks` as needs-clarification and continue to the next goal.
 
-4. **Write `<run-dir>/frame/<Gn>.md`:**
+5. **Write `<run-dir>/frame/<Gn>.md`:**
 
    ```markdown
    # Frame — <Gn>: <goal text>
+
+   ## Librarian
+   <verbatim Librarian response>
 
    ## Starter
    <verbatim Starter response>
@@ -48,9 +68,9 @@ Per goal. Produces a synthesized framing and a Mode classification.
    <verbatim Critic response>
 
    ## Organizer synthesis
-   <reframing + adopted risks + mode classification + reasoning>
+   <reframing + adopted risks + mode classification + reasoning + how Librarian findings shaped the synthesis>
    ```
 
-5. **Append a Decision Log entry** to `<run-dir>/decisions.md` using `templates/decision.md`.
+6. **Append a Decision Log entry** to `<run-dir>/decisions.md` using `templates/decision.md`.
 
-6. **Update `register.md`**: set `Mode: <CODE|RESEARCH|MIXED>` for this goal.
+7. **Update `register.md`**: set `Mode: <CODE|RESEARCH|MIXED>` for this goal.

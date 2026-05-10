@@ -1,6 +1,6 @@
 ---
 name: council-of-experts
-description: Use when invoking /council with one or more goals — orchestrates a long-running, autonomous Claude Code session that runs goals to completion using the Starter / Critic / Organizer / Beautiful-Person personality framework on top of superpowers. The session does NOT pause for user input once goals are accepted; it runs until every goal is done or filed as blocked.
+description: Use when invoking /council with one or more goals — orchestrates a long-running, autonomous Claude Code session that runs goals to completion using the Librarian / Starter / Critic / Organizer / Beautiful-Person personality framework on top of superpowers. The session does NOT pause for user input once goals are accepted; it runs until every goal is done or filed as blocked.
 ---
 
 # Council of Experts
@@ -18,7 +18,7 @@ Read `personalities/organizer.md` and behave as the Organizer for the rest of th
 ```
 0. Intake             — parse goals, build run directory, write Goal Register
 1. Per goal G in order:
-   a. Frame gate      — gates/frame.md (parallel Starter+Critic, mode classification)
+   a. Frame gate      — gates/frame.md (Librarian recall, then parallel Starter+Critic, mode classification)
    b. Plan gate       — gates/plan.md (mode-specific draft + critique)
    c. Execute         — modes/<mode>.md (CODE / RESEARCH / MIXED)
    d. Close gate      — gates/close.md (Beautiful Person, external state changes)
