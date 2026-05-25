@@ -2,6 +2,8 @@
 
 Per goal. Produces a synthesized framing and a Mode classification.
 
+Follows the [Subagent return shape](../SKILL.md#subagent-return-shape-disk-first-convention) rule: each subagent writes its full response to its own file under `<run-dir>/frame/`. The Organizer only ever sees short structured returns and assembles a thin synthesis.
+
 ## Inputs
 - Goal text (from `register.md`)
 - Goal ID (e.g. `G1`)
@@ -9,7 +11,7 @@ Per goal. Produces a synthesized framing and a Mode classification.
 
 ## Procedure
 
-1. **Dispatch the Librarian (sequential, before Starter and Critic)** — its findings become context for the parallel pair. Single subagent dispatch via the `Agent` tool. If the harness has no subagent-dispatch tool, the Organizer performs the librarian search itself per `personalities/librarian.md` and writes the result into the gate artifact's Librarian section. The dispatch:
+1. **Dispatch the Librarian (sequential, before Starter and Critic)** — its findings become context for the parallel pair. Single subagent dispatch via the `Agent` tool. If the harness has no subagent-dispatch tool, the Organizer performs the librarian search itself per `personalities/librarian.md` and writes the result directly to `<run-dir>/frame/<Gn>-librarian.md`. The dispatch:
    - `subagent_type`: `general-purpose`
    - `description`: `"Recall prior work for goal <Gn>"`
    - `prompt`: load `personalities/librarian.md`, embed the system-prompt blockquote verbatim at the top, then append:
@@ -17,12 +19,20 @@ Per goal. Produces a synthesized framing and a Mode classification.
      ```
      GOAL: <goal text>
 
-     Search the surfaces listed in your personality file for prior work touching this goal. Return the format specified there.
+     Search the surfaces listed in your personality file for prior work touching this goal.
+
+     OUTPUT DISCIPLINE:
+     1. Write your FULL findings (Most relevant / Possibly relevant / Nothing found + Recommendation) to <run-dir>/frame/<Gn>-librarian.md using the format in your personality file.
+     2. Return to me ONLY:
+        - the file path you wrote to
+        - your Recommendation line, verbatim
+        - the count of items in each bucket (e.g. "Most relevant: 2, Possibly relevant: 1")
+     Do NOT echo the bodies of the items you found. The Organizer will read your file if it needs detail.
      ```
 
    Wait for the response.
 
-2. **Dispatch Starter and Critic in parallel.** Single message, two parallel subagent dispatches via the `Agent` tool (in some harnesses called `Task`; if it appears under `ToolSearch` as a deferred tool, fetch it first with `ToolSearch select:Agent`). If the harness has no subagent-dispatch tool at all, voice ONLY the Critic in-session (read `personalities/critic.md` and write its response into the gate artifact). Skip Starter — the Organizer's native voice (already biased toward action by virtue of running the show) covers the generative role adequately, and adversarial-from-cold-context is the hardest role to fake while playing both sides. Synthesis discipline applies unchanged. Each call:
+2. **Dispatch Starter and Critic in parallel.** Single message, two parallel subagent dispatches via the `Agent` tool (in some harnesses called `Task`; if it appears under `ToolSearch` as a deferred tool, fetch it first with `ToolSearch select:Agent`). If the harness has no subagent-dispatch tool at all, voice ONLY the Critic in-session — write its framing directly to `<run-dir>/frame/<Gn>-critic.md`. Skip Starter — the Organizer's native voice (already biased toward action by virtue of running the show) covers the generative role adequately, and adversarial-from-cold-context is the hardest role to fake while playing both sides. Synthesis discipline applies unchanged. Each call:
    - `subagent_type`: `general-purpose`
    - `description`: `"Frame goal <Gn>"` (Starter) or `"Critique goal <Gn>"` (Critic)
    - `prompt`: load the personality file (`personalities/starter.md` or `personalities/critic.md`) and embed the system-prompt blockquote verbatim at the top of the Agent prompt, then append:
@@ -30,20 +40,24 @@ Per goal. Produces a synthesized framing and a Mode classification.
      ```
      GOAL: <goal text>
 
-     LIBRARIAN FINDINGS:
-     <full Librarian response, including Recommendation>
+     LIBRARIAN RECOMMENDATION: <verbatim Recommendation line from step 1>
+     LIBRARIAN FINDINGS FILE: <run-dir>/frame/<Gn>-librarian.md
+     (Read this file if and only if you need the detail to frame this goal well.)
 
-     Frame this goal. Produce a markdown response with these sections:
-     - **Reframing**: what is this goal really asking for, in your voice?
-     - **Strongest version**: the most ambitious version that could plausibly succeed (Starter) / the version most likely to actually ship (Critic)
-     - **Top risks/objections**: the most likely failure modes
-     - End with the personality's signature line (Top recommendation / Strongest objection)
+     Frame this goal. Write your FULL response — with sections Reframing / Strongest version / Top risks-or-objections / signature line — to <run-dir>/frame/<Gn>-<role>.md (role = "starter" or "critic" — whichever you are).
+
+     Return to me ONLY:
+     - the file path you wrote to
+     - your signature line, verbatim (Top recommendation / Strongest objection)
+     - a ≤120-word synthesis-ready summary (the single thing the Organizer most needs to know from your framing)
+     Do NOT echo your full response. The Organizer will read your file if it needs detail.
      ```
 
 3. **Wait for both responses.**
 
 4. **Synthesize as Organizer:**
-   - Read all three (Librarian, Starter, Critic) fully.
+   - You have the three short returns (path + recommendation/signature + summary). That is usually enough.
+   - If the summaries conflict or feel thin, `Read` the per-role files on demand — but drop them from working memory as soon as the synthesis paragraph below is written.
    - If the Librarian found prior work that fundamentally changes what the goal is asking for — e.g., it's already done, or there's an open task — note this in the synthesis and consider revising the goal in `register.md`. In extreme cases (prior work shipped exactly this), file the goal to `sleeper-tasks` as `already-done` and move to the next goal.
    - Adopt the strongest reframing.
    - Adopt the most cogent risk.
@@ -54,23 +68,21 @@ Per goal. Produces a synthesized framing and a Mode classification.
    - If neither dimension applies, re-run the Frame gate ONCE with a stricter prompt: `"This goal as written has neither a code change nor a knowledge artifact. Reframe it as one or both, OR explain why it cannot be."` After two failed reruns, file the goal to `sleeper-tasks` as needs-clarification and continue to the next goal.
    - **Write a one-line Acceptance criterion** — concrete terms for what makes this goal "done", referencing mode-specific outputs (e.g. `"commit pushed to main with tests green"`, `"wiki/foo.md reachable from INDEX.md, ≥3 sources cited"`). This goes into `register.md` in step 7 below.
 
-5. **Write `<run-dir>/frame/<Gn>.md`:**
+5. **Write `<run-dir>/frame/<Gn>.md`** as an INDEX, not a transcript:
 
    ```markdown
    # Frame — <Gn>: <goal text>
 
-   ## Librarian
-   <verbatim Librarian response>
-
-   ## Starter
-   <verbatim Starter response>
-
-   ## Critic
-   <verbatim Critic response>
+   ## Role files
+   - Librarian: ./<Gn>-librarian.md — <Recommendation line>
+   - Starter:   ./<Gn>-starter.md   — <signature line>
+   - Critic:    ./<Gn>-critic.md    — <signature line>
 
    ## Organizer synthesis
    <reframing + adopted risks + mode classification + reasoning + how Librarian findings shaped the synthesis>
    ```
+
+   The role bodies stay in their per-role files. Do NOT paste them into this index.
 
 6. **Append a Decision Log entry** to `<run-dir>/decisions.md` using `templates/decision.md`.
 

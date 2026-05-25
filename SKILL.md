@@ -115,6 +115,27 @@ Per-gate application:
 - **Review gate** — unlimited trivial in-place fixups; 1 implementer re-dispatch for non-trivial issues; then blocker.
 - **Close gate** — 1 BP-driven re-engage; otherwise file a follow-up.
 
+## Subagent return shape (disk-first convention)
+
+Long-running council sessions live and die by the Organizer's context budget. The single biggest lever is **who writes artifacts to disk**.
+
+**Rule:** subagents own their own files. The Organizer owns the index, the synthesis, and the decisions — not the prose.
+
+Every subagent dispatch in this skill MUST follow this shape:
+
+1. The dispatch prompt tells the subagent the exact file path to write its full output to (e.g. `<run-dir>/frame/<Gn>-librarian.md`).
+2. The subagent's *returned message to the Organizer* is short and structured — typically:
+   - the file path it wrote to
+   - a verdict / classification line if the gate needs one
+   - a bounded summary (≤120 words) or a fixed-shape findings list (e.g. top-3, ≤60 words each)
+   - nothing else — no echoing of the full body
+3. The Organizer reads from disk on demand if it needs more detail for synthesis, then drops it from working context as soon as the synthesis is written.
+4. Gate artifacts (`frame/<Gn>.md`, `plan/<Gn>.md`, `close/<Gn>.md`) are **indexes**: synthesis + pointers to the per-role files, not verbatim dumps.
+
+If a subagent returns a wall of prose anyway, the Organizer should treat that as the gate's problem (the dispatch prompt was too loose) and tighten it next time — not paste the wall into the gate artifact.
+
+The same rule applies to Skill-tool invocations whose output the Organizer doesn't need to act on directly: prefer skills that write to disk (e.g. `superpowers:writing-plans` saves to `docs/superpowers/plans/...`) and record only the path + acceptance criteria in the Decision Log.
+
 ## Composition with superpowers
 
 When invoking another skill, use the `Skill` tool with the exact name. Do not re-implement.
