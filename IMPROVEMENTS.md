@@ -1,6 +1,6 @@
 # Council process improvements
 
-**Status:** all items shipped (2026-05-10). Open decisions resolved: `INTERRUPT.md` is freeform; iteration-limit standard adopted as proposed (1 re-dispatch + trivial-unlimited at Review); this file kept at repo root as a record of the work.
+**Status:** all items shipped. Original batches (P1–P3) landed 2026-05-10; P4 disk-first hardening landed 2026-05-25. Open decisions resolved: `INTERRUPT.md` is freeform; iteration-limit standard adopted as proposed (1 re-dispatch + trivial-unlimited at Review); this file kept at repo root as a record of the work.
 
 A working list of process issues identified during the post-extraction review (2026-05-10), with proposed fixes. Items are ordered by leverage — top items will compound across all future runs and should ship first.
 
@@ -141,11 +141,39 @@ Keep both; make the rationale explicit.
 
 ---
 
+---
+
+## P4 — Long-running session hardening (2026-05-25)
+
+Identified during a session about making `/council` survive much longer runs (toward "effectively indefinite"). The Organizer's context budget is the bottleneck: the model can't trigger `/compact` on itself, so the only lever inside the skill is reducing what lands in parent context per goal.
+
+### P4.1 Disk-first subagent return shape
+
+**Status:** shipped.
+
+**Problem.** Across five sites, the Organizer was the writer-of-record for prose produced by subagents — Frame artifacts pasted three role responses "verbatim", per-task Review pulled two full reviews in-band, Research Execute returned N full sections and then assembled them in-context, Plan critiques returned full critique bodies, Close pulled BP's rewritten commit message and (for RESEARCH/MIXED) wiki entry through the parent. Per-goal context cost compounded fast; CODE-mode Review compounded *per task*.
+
+**Fix.** One central rule (new section in `SKILL.md`): subagents own their files; the Organizer owns the index and the decisions. Each gate restates this concretely:
+- Frame: Librarian/Starter/Critic write to `<Gn>-<role>.md`; frame artifact is an index + synthesis.
+- Review: tech + Critic reviews to `reviews/task-<N>-{tech,critic}.md`; diff staged to disk so even the Critic reads from disk.
+- Plan: critics write to `<Gn>-{starter,critic}.md`; plan body referenced by path through Execute; small-fixes-needed becomes an in-place `Edit` (no re-dispatch).
+- Close: commit message staged at `close/<Gn>-commit-msg.txt`; BP rewrites in place; `git commit -F` keeps the message out of context.
+- Research: section subagents write their own sections; a dedicated Assembler subagent reads sections from disk and writes `draft.md`; Critic-on-draft reads from disk.
+- Mixed: reconciliation Critic reads draft + diff from disk.
+
+**Files.** `SKILL.md`, `gates/{frame,plan,review,close}.md`, `modes/{research,mixed}.md`. README.md updated to document the design principle.
+**Effort.** M
+**Risks.** Subagents may revert to wall-of-prose returns if prompt discipline is loose. Mitigated: each dispatch prompt carries an explicit "OUTPUT DISCIPLINE" block listing exactly what to return and what NOT to echo.
+**Followup signal to watch.** First multi-goal real run after this change — count how often the Organizer ends up reading per-role files on-demand vs. relying on the structured returns. If on-demand reads are frequent, the structured-return shapes are too lean.
+
+---
+
 ## Sequencing
 
 - **Batch A (one session, ~1 h):** P1.1, P1.2, P1.3 — all small, all high-leverage. Land together.
 - **Batch B (one session, ~2 h):** P2.1, P2.2, P2.3 — medium-scope process changes. Validate Batch A in a real run before tackling these.
 - **Batch C (defer):** P3.1, P3.2 — clarity-only changes, ship when convenient.
+- **Batch D (2026-05-25):** P4.1 — long-running session hardening via disk-first subagent returns.
 
 Run `/council` against this repo with one or two real goals once Batch A lands — empirical signal beats speculation. After 2–3 real runs, revisit P2.1 (iteration-limit standard); the data may suggest a different default than the one proposed here.
 

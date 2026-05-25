@@ -15,12 +15,16 @@ The skill loads automatically on the next Claude Code session start.
 
 ## Where to read
 
-- **`SKILL.md`** — entry point: lifecycle, the per-goal loop, mid-run interrupt channel, iteration limits, composition with `superpowers:` skills.
+- **`SKILL.md`** — entry point: lifecycle, the per-goal loop, mid-run interrupt channel, iteration limits, the disk-first subagent-return-shape convention, composition with `superpowers:` skills.
 - **`personalities/`** — one file per role (Librarian, Starter, Critic, Organizer, Beautiful Person).
 - **`gates/`** — Frame, Plan, Review, Close procedures.
 - **`modes/`** — CODE, RESEARCH, MIXED Execute pipelines.
 - **`templates/`** — Goal Register, Decision Log entry, final Report.
 - **`IMPROVEMENTS.md`** — record of the post-extraction process-improvement plan (all items shipped).
+
+## Design principle: disk-first subagent returns
+
+To keep the Organizer's context lean enough for long, multi-goal runs, every subagent dispatch in this skill follows one rule: **the subagent writes its full output to a known file path; it returns only a verdict + a short, bounded summary to the Organizer.** Gate artifacts (`frame/<Gn>.md`, `plan/<Gn>.md`, `close/<Gn>.md`) are indexes pointing at per-role files, not verbatim transcripts. See `SKILL.md` → "Subagent return shape (disk-first convention)" for the canonical statement; each gate restates it in concrete terms.
 
 ## Mid-run nudge
 
