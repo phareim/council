@@ -151,7 +151,7 @@ When invoking another skill, use the `Skill` tool with the exact name. Do not re
 
 ## Important context
 
-- The user's CLAUDE.md (`~/CLAUDE.md`) requires committing and pushing code changes when finished. The Stop hook at `~/.claude/hooks/remind-commit-push.sh` enforces this. The Close gate handles it.
-- The wiki is a git-tracked tree of markdown files at `~/thoughts/wiki/`. Writes are file-based — create or edit the article file and update `~/thoughts/INDEX.md`. The `thoughts-autocommit` PM2 service auto-commits and pushes the change after a 30s debounce. Conventions (slug rules, required structure, `[[topic-name]]` links) live in `~/thoughts/.claude/skills/wiki-maintenance/SKILL.md`.
+- Code changes are committed when finished. The Close gate handles it.
+- The wiki is a git-tracked tree of markdown files at `~/thoughts/wiki/`. Writes are file-based — create or edit the article file and update `~/thoughts/INDEX.md`. The `thoughts-autocommit` PM2 service auto-commits the change after a 30s debounce. Conventions (slug rules, required structure, `[[topic-name]]` links) live in `~/thoughts/.claude/skills/wiki-maintenance/SKILL.md`.
 - The `sfl` CLI is for SFL ideas; `sleeper-tasks` CLI is for tasks; both are installed.
 - The user is `petter`. Address them as such in any text the user will read (commit messages, wiki entries, the Report).

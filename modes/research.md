@@ -136,4 +136,4 @@ After all sections are in:
 
 ## Close
 
-Run the Close gate (`gates/close.md`). Beautiful Person reads `draft.md` from disk and writes the final wiki entry (in human voice, not section-dump format) directly to `~/thoughts/wiki/<slug>.md`, updates `~/thoughts/INDEX.md`, and creates the SFL idea. Git commits and pushes are handled by the `thoughts-autocommit` PM2 service.
+Run the Close gate (`gates/close.md`). Beautiful Person reads `draft.md` from disk and writes the final wiki entry (in human voice, not section-dump format) directly to `~/thoughts/wiki/<slug>.md`, updates `~/thoughts/INDEX.md`, and creates the SFL idea. Git commits are handled by the `thoughts-autocommit` PM2 service.

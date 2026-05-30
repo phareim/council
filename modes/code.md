@@ -21,4 +21,4 @@ After each task in the plan, run the Review gate (`gates/review.md`) to add the 
 
 ## Close
 
-Run the Close gate (`gates/close.md`). Commit + push happen there.
+Run the Close gate (`gates/close.md`). The commit happens there.

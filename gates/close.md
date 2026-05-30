@@ -7,7 +7,7 @@ Follows the [Subagent return shape](../SKILL.md#subagent-return-shape-disk-first
 ## Inputs
 - Goal text + Mode (from `register.md`)
 - All work artifacts (`<run-dir>/work/<Gn>/`, plan, frame, etc.) — referenced by path
-- For CODE: the unpushed commits on the current branch (and the cumulative diff)
+- For CODE: the commits on the current branch (and the cumulative diff)
 - For RESEARCH: the assembled draft at `<run-dir>/work/<Gn>/draft.md`
 
 ## Procedure
@@ -73,8 +73,8 @@ Follows the [Subagent return shape](../SKILL.md#subagent-return-shape-disk-first
 5. **If verdict is `needs-revision`** — re-engage BP exactly once with a tightened prompt (the Organizer's note on what to fix), per the [Iteration limits](../SKILL.md#iteration-limits) cap. If the second pass still says `needs-revision`, file a `sleeper-tasks` follow-up and ship what's there.
 
 6. **Perform external state changes:**
-   - CODE: `git commit -F <run-dir>/close/<Gn>-commit-msg.txt && git push origin main`. The `-F` form means the commit message never enters Organizer context as inline text. Honors the `~/CLAUDE.md` "always commit and push when finished" rule and the Stop hook at `~/.claude/hooks/remind-commit-push.sh`.
-   - RESEARCH: BP already wrote the wiki entry and updated INDEX.md. The wiki repo is auto-committed and pushed by the `thoughts-autocommit` PM2 service (30s debounce) — no manual git needed. Then `sfl meta add` an idea pointing to the article path.
+   - CODE: `git commit -F <run-dir>/close/<Gn>-commit-msg.txt`. The `-F` form means the commit message never enters Organizer context as inline text.
+   - RESEARCH: BP already wrote the wiki entry and updated INDEX.md. The wiki repo is auto-committed by the `thoughts-autocommit` PM2 service (30s debounce) — no manual git needed. Then `sfl meta add` an idea pointing to the article path.
    - MIXED: do both.
 
 7. **Write `<run-dir>/close/<Gn>.md`** as an index, not a transcript:
