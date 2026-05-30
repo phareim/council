@@ -1,0 +1,5 @@
+# Claude Code runtime state (scheduled-task locks, session scratch) — not skill content
+.claude/
+
+# Council run directories, if ever created inside the repo (canonical location is ~/council/runs/)
+runs/
