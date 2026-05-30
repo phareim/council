@@ -16,7 +16,7 @@ Used when the goal has both code-shipping and knowledge-artifact dimensions.
 Two paths:
 
 **Dependent (research-first):**
-1. Run the RESEARCH-mode Execute step (`modes/research.md`) to produce the assembled research artifact in `<run-dir>/work/<Gn>/research/`.
+1. Run the RESEARCH-mode Execute step (`modes/research.md`) to produce the assembled research artifact at `<run-dir>/work/<Gn>/draft.md` (the same flat path RESEARCH and the Close gate use — research's filenames don't collide with code-track work).
 2. Use the research output to refine the code plan if needed (the Organizer judges).
 3. Run the CODE-mode Execute step (`modes/code.md`).
 
@@ -42,7 +42,7 @@ After both research and code tracks complete, before invoking the Close gate:
 2. **If tension is plausible**, dispatch a Critic subagent. Embed `personalities/critic.md` system prompt verbatim, then append:
 
    ```
-   RESEARCH DRAFT FILE: <run-dir>/work/<Gn>/research/draft.md
+   RESEARCH DRAFT FILE: <run-dir>/work/<Gn>/draft.md
    CODE DIFF FILE: <run-dir>/close/<Gn>-diff.patch
    (Stage the code diff via `git diff <merge-base>..HEAD > <path>` BEFORE dispatching, same as the Close gate does. Read both from disk.)
 
