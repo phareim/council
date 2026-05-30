@@ -42,7 +42,7 @@ Follows the [Subagent return shape](../SKILL.md#subagent-return-shape-disk-first
 3. **Synthesize as Organizer** using only the two structured returns (verdicts + top-3 findings). If the findings conflict or are too thin to decide, `Read` the relevant per-role critique file on demand, then drop it from working memory after the decision is logged.
    - Both `ship-as-is` → proceed to Execute.
    - One or both `small-fixes-needed` → the Organizer applies the listed fixes directly to the plan file with `Edit` (no re-dispatch), then proceeds.
-   - Either `needs-rework` → revise the plan once (CODE: re-invoke `superpowers:writing-plans` with the critique findings; RESEARCH/MIXED: Organizer re-drafts) and re-dispatch critics ONCE. After one revision, ship whichever version is strongest.
+   - Either `needs-rework` → revise the plan once (CODE: re-invoke `superpowers:writing-plans` with the critique findings; RESEARCH/MIXED: Organizer re-drafts) and re-dispatch critics ONCE. Prefer `SendMessage(to: <critic agentId>)` to continue the same critic with its context intact (main-loop dispatch only). After one revision, ship whichever version is strongest.
 
 4. **Append a Decision Log entry** to `<run-dir>/decisions.md`. The entry records: plan path, critic-file path, starter-file path, final verdict, acceptance criterion (copied forward from Frame). It does NOT inline the plan body.
 

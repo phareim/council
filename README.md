@@ -15,16 +15,18 @@ The skill loads automatically on the next Claude Code session start.
 
 ## Where to read
 
-- **`SKILL.md`** — entry point: lifecycle, the per-goal loop, mid-run interrupt channel, iteration limits, the disk-first subagent-return-shape convention, composition with `superpowers:` skills.
+- **`SKILL.md`** — entry point: lifecycle, the per-goal loop, mid-run interrupt channel, iteration limits, the disk-first subagent-return-shape convention, Workflow fan-out, model/tool/plan-mode rules, composition with `superpowers:` skills.
 - **`personalities/`** — one file per role (Librarian, Starter, Critic, Organizer, Beautiful Person).
 - **`gates/`** — Frame, Plan, Review, Close procedures.
 - **`modes/`** — CODE, RESEARCH, MIXED Execute pipelines.
 - **`templates/`** — Goal Register, Decision Log entry, final Report.
-- **`IMPROVEMENTS.md`** — record of the post-extraction process-improvement plan (all items shipped).
+- **`IMPROVEMENTS.md`** — record of the process-improvement plan (P1–P5, all items shipped).
 
-## Design principle: disk-first subagent returns
+## Design principle: heavy output never transits the Organizer
 
-To keep the Organizer's context lean enough for long, multi-goal runs, every subagent dispatch in this skill follows one rule: **the subagent writes its full output to a known file path; it returns only a verdict + a short, bounded summary to the Organizer.** Gate artifacts (`frame/<Gn>.md`, `plan/<Gn>.md`, `close/<Gn>.md`) are indexes pointing at per-role files, not verbatim transcripts. See `SKILL.md` → "Subagent return shape (disk-first convention)" for the canonical statement; each gate restates it in concrete terms.
+To keep the Organizer's context lean enough for long, multi-goal runs, every subagent dispatch follows one rule: **the subagent writes its full output to a known file path; it returns only a verdict + a short, bounded summary.** Gate artifacts (`frame/<Gn>.md`, `plan/<Gn>.md`, `close/<Gn>.md`) are indexes pointing at per-role files, not verbatim transcripts. See `SKILL.md` → "Subagent return shape (disk-first convention)".
+
+For **Execute-phase fan-out** (RESEARCH sections, MIXED parallel tracks, ≥3 independent units) the skill uses the `Workflow` tool, which enforces the same principle natively — `agent()` results live in script variables and never reach the Organizer; the script returns only a thin manifest, with final artifacts still written to the run dir. Frame/Plan/Close stay in the main session. See `SKILL.md` → "Fan-out execution: the Workflow tool". The skill also adopts schema-validated returns, per-role model/effort selection, `SendMessage` re-dispatch, worktree isolation for concurrent file mutation, and `ToolSearch` for deferred tools — see `IMPROVEMENTS.md` P5.
 
 ## Mid-run nudge
 

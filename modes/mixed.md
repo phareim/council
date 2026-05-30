@@ -21,10 +21,16 @@ Two paths:
 3. Run the CODE-mode Execute step (`modes/code.md`).
 
 **Independent (parallel):**
-1. Invoke `superpowers:dispatching-parallel-agents` via the `Skill` tool with two parallel tracks:
+1. Run the two tracks concurrently — as a `Workflow` `parallel()` stage ([Fan-out execution](../SKILL.md#fan-out-execution-the-workflow-tool)), or via `superpowers:dispatching-parallel-agents` if the fan-out must stay interruptible mid-run:
    - Research track: runs the RESEARCH-mode Execute step
    - Code track: runs the CODE-mode Execute step
-2. Wait for both to complete (or one to fail; in which case the other still runs to completion before Close).
+2. Wait for both to complete (or one to fail; in which case the other still runs to completion before Close). Both tracks' artifacts land in the run dir as usual; a Workflow returns only a thin manifest.
+
+**Worktree isolation.** Only when both tracks mutate the *same repo files* concurrently, run them in `isolation: 'worktree'`. Two things are easy to get wrong:
+- Worktree isolates the **repo working tree only**. The run dir (`~/council/runs/...`, an absolute path outside the repo) is shared and safe, so disk-first artifacts are unaffected — both tracks read and write the run dir normally.
+- A commit made *inside* a worktree lands on that worktree's branch, invisible to the main tree. So the code track must **not commit inside the worktree** — leave the commit to the Close gate, which runs in the main tree against the reconciled result.
+
+Without concurrent contention on the same repo files, the tracks rarely collide (research writes the run dir, code writes the repo), so plain parallel dispatch is cheaper — skip the worktree.
 
 ## Reconciliation step (parallel branch only)
 

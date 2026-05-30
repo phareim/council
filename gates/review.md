@@ -53,7 +53,7 @@ Keep both. Stripping one to "save tokens" loses the orthogonal signal — the te
 3. **Synthesize as Organizer** (per [Iteration limits](../SKILL.md#iteration-limits)) using only the two structured returns — verdicts + top-3 findings. If the findings conflict or feel under-specified, `Read` the relevant per-reviewer file on demand, then drop it from working memory after the decision is logged. Possible outcomes:
    - Both accept → mark task done, move on.
    - One says fix-ups, *trivial* (typo-class, single-line, the Organizer can fix in place) → apply directly and re-review. Trivial fixups are uncapped.
-   - One says fix-ups, *non-trivial* → dispatch the implementer ONCE to address; then re-review.
+   - One says fix-ups, *non-trivial* → re-dispatch the implementer ONCE to address; then re-review. When the implementer was a main-loop `Agent`, prefer `SendMessage(to: <implementer agentId>)` to continue it with its context intact over a cold restart. (Inside a Workflow this isn't available — the re-dispatch is a fresh `agent()` call carrying the prior diff's path.)
    - Either says redo, OR the implementer re-dispatch did not converge → declare a true blocker on this goal: file a `sleeper-tasks` entry and move to the next goal.
 
 4. **Append a Decision Log entry.** The entry references the two reviewer files by path; it does NOT inline their bodies. Acceptable format: `tech-review: <path> — <verdict>; critic-review: <path> — <verdict>; decision: <accept | fixup | redo | blocker>; rationale: <≤40 words>`.

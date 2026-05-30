@@ -56,9 +56,9 @@ After the critique pass converges, run a 30-second Beautiful Person pass on the 
 
 ## Execute step
 
-For each section in the outline, dispatch a research subagent. Use `superpowers:dispatching-parallel-agents` if there are 3+ independent sections; otherwise dispatch sequentially or in pairs.
+**For ≥3 sections, run the whole fan-out as a `Workflow`** (section drafting → an in-script Assembler → the Critic-on-draft) — see [Fan-out execution](../SKILL.md#fan-out-execution-the-workflow-tool). The script holds section bodies in vars, still writes each section + `draft.md` + `critic-pass.md` to the run dir, and returns ONLY a thin manifest (paths + word/source counts + critic verdict + ≤5 fixes). Give each `agent()` a JSON `schema` matching the return shapes below; a re-dispatch inside the Workflow is a cold `agent()` call carrying the prior section's path (no `SendMessage`). `log()` a line before launch and a digest after. Keep the section/Assembler fan-out as main-loop `superpowers:dispatching-parallel-agents` instead only when you need it interruptible mid-run (a Workflow can't be).
 
-Each research subagent gets:
+For <3 sections, or in the interruptible case, dispatch in the main loop sequentially or in pairs. Either way, each research subagent gets:
 - The PATH to the outline (`<run-dir>/plan/<Gn>.md`) — they read it from disk
 - The section number and title ITS section is responsible for
 - Tools allowed: `WebSearch`, `WebFetch`, `Bash`, `Read`, `Grep`

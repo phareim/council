@@ -70,7 +70,7 @@ Follows the [Subagent return shape](../SKILL.md#subagent-return-shape-disk-first
 
 4. **Apply BP's follow-ups** (if any). The Organizer reads `<Gn>-followups.md`, files each as `sleeper-tasks` (if substantive) or `sfl meta add` (if polish), records the IDs in the Close artifact, and drops the file from working memory.
 
-5. **If verdict is `needs-revision`** — re-engage BP exactly once with a tightened prompt (the Organizer's note on what to fix), per the [Iteration limits](../SKILL.md#iteration-limits) cap. If the second pass still says `needs-revision`, file a `sleeper-tasks` follow-up and ship what's there.
+5. **If verdict is `needs-revision`** — re-engage BP exactly once with a tightened prompt (the Organizer's note on what to fix), per the [Iteration limits](../SKILL.md#iteration-limits) cap. Prefer `SendMessage(to: <BP agentId>)` to continue the same BP subagent with its context intact (main-loop dispatch only). If the second pass still says `needs-revision`, file a `sleeper-tasks` follow-up and ship what's there.
 
 6. **Perform external state changes:**
    - CODE: `git commit -F <run-dir>/close/<Gn>-commit-msg.txt`. The `-F` form means the commit message never enters Organizer context as inline text.

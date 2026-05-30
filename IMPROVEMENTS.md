@@ -1,6 +1,6 @@
 # Council process improvements
 
-**Status:** all items shipped. Original batches (P1–P3) landed 2026-05-10; P4 disk-first hardening landed 2026-05-25. Open decisions resolved: `INTERRUPT.md` is freeform; iteration-limit standard adopted as proposed (1 re-dispatch + trivial-unlimited at Review); this file kept at repo root as a record of the work.
+**Status:** all items shipped. Original batches (P1–P3) landed 2026-05-10; P4 disk-first hardening landed 2026-05-25; P5 (Opus 4.8 + new Claude Code capabilities) landed 2026-05-30. Open decisions resolved: `INTERRUPT.md` is freeform; iteration-limit standard adopted as proposed (1 re-dispatch + trivial-unlimited at Review); this file kept at repo root as a record of the work.
 
 A working list of process issues identified during the post-extraction review (2026-05-10), with proposed fixes. Items are ordered by leverage — top items will compound across all future runs and should ship first.
 
@@ -168,12 +168,29 @@ Identified during a session about making `/council` survive much longer runs (to
 
 ---
 
+## P5 — Opus 4.8 + new Claude Code capabilities (2026-05-30)
+
+**Status:** shipped. Design adversarially pressure-tested by a 3-lens review swarm (workflow-semantics, council-invariants, skill-authoring) plus a cold-read consistency pass before shipping; every blocker/major finding folded in.
+
+**Problem.** The skill predated the `Workflow` tool, schema-validated structured returns, `SendMessage` agent continuation, per-agent model override / `agentType`, worktree isolation, `ToolSearch` deferred tools, turn budgets, and the explicit plan-mode tools. The disk-first convention was hand-rolling, in prose, the exact context isolation the `Workflow` tool now provides natively.
+
+**Fix.** Hybrid, not rewrite — the Organizer-as-spine architecture and the transcript + run-dir + INTERRUPT interface are unchanged.
+- `SKILL.md` — folded a `### Fan-out execution: the Workflow tool` subsection *into* the existing disk-first section (one home for the "heavy output never transits the Organizer" principle, so the two don't drift). It's a conditional, not a "MAY": ≥3 independent heavy-output units in an Execute phase → use a Workflow; it *replaces* `dispatching-parallel-agents` for that role, which survives only as the named exception when mid-run interruptibility matters. Five safety rules, two load-bearing: **return a thin manifest only** (a Workflow's return value enters Organizer context), and **final artifacts still go to disk** (post-Workflow synthesis reads disk, not vanished script vars). Plus: schema over prose inside Workflows; re-dispatch inside a Workflow is a cold `agent()` (no `SendMessage`); `log()` for transcript visibility + the INTERRUPT blind-window tradeoff; resume scoped to a single in-flight phase, not full-session durability.
+- `SKILL.md` — new compact "Model, tools & plan mode" section: model guidance by *capability tier* with aliases (no pinned ids that rot) and a dated one-liner of current tiers; `ToolSearch select:` for deferred/MCP tools; a strengthened never-enter-plan-mode rule (it halts the run, not just prompts).
+- `SKILL.md` — budget-aware iteration limits: reserve headroom when `budget.total` is set, fixed limits when null.
+- `gates/{review,plan,close}.md` — `SendMessage`-to-continue for the main-loop re-dispatch, each with the main-loop-only caveat (gate files are read independently).
+- `modes/research.md` — Workflow fan-out as the path for ≥3 sections; disk-first dispatch shapes kept verbatim as the interruptible main-loop fallback.
+- `modes/mixed.md` — worktree isolation correctly scoped: repo working tree only; run dir (absolute path) shared and safe; don't commit inside the worktree.
+
+**Deferred (intentionally NOT in the always-loaded skill body).** Recurring/scheduled councils via `CronCreate`, and `ScheduleWakeup` to wait on external state, are out of scope for a single run — recorded here rather than bloating `SKILL.md`. If pursued: a cron agent that invokes `/council` with a standing goal set, writing to the same `~/council/runs/` tree.
+
 ## Sequencing
 
 - **Batch A (one session, ~1 h):** P1.1, P1.2, P1.3 — all small, all high-leverage. Land together.
 - **Batch B (one session, ~2 h):** P2.1, P2.2, P2.3 — medium-scope process changes. Validate Batch A in a real run before tackling these.
 - **Batch C (defer):** P3.1, P3.2 — clarity-only changes, ship when convenient.
 - **Batch D (2026-05-25):** P4.1 — long-running session hardening via disk-first subagent returns.
+- **Batch E (2026-05-30):** P5 — Opus 4.8 + new Claude Code capabilities (Workflow fan-out, schema returns, SendMessage re-dispatch, model tiers, worktree isolation, ToolSearch, budget, plan-mode prohibition).
 
 Run `/council` against this repo with one or two real goals once Batch A lands — empirical signal beats speculation. After 2–3 real runs, revisit P2.1 (iteration-limit standard); the data may suggest a different default than the one proposed here.
 
