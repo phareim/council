@@ -15,7 +15,8 @@ const USAGE = `usage: learn.mjs <verb> [args]
   review    <run_id> --file <markdown-path> --lesson "<one-liner>" [--lesson "..."]...
   run-end   <run_id> --status <done|partial|aborted> [--register <path-to-register.md>]
   recall    [--limit <n>] [--grep <word>]
-  backfill  [--runs-dir <dir>]`;
+  backfill  [--runs-dir <dir>]
+the loop + self-review questionnaire: learning.md (repo root)`;
 
 function fail(msg, code) {
   process.stderr.write(msg + '\n');
