@@ -15,7 +15,7 @@ Follows the [Subagent return shape](../SKILL.md#subagent-return-shape-disk-first
 
 ## Procedure
 
-1. **Stage the cumulative diff.** `<since-ref>` is the SHA recorded at Execute start (`modes/code.md` records it to `<run-dir>/work/<Gn>/execute-start-sha` before invoking subagent-driven-development):
+1. **Stage the cumulative diff** against the SHA recorded at Execute start (`modes/code.md` writes it to `<run-dir>/work/<Gn>/execute-start-sha` before invoking subagent-driven-development):
 
    ```bash
    mkdir -p "<run-dir>/work/<Gn>"
