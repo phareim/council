@@ -46,7 +46,7 @@ Follows the [Subagent return shape](../SKILL.md#subagent-return-shape-disk-first
 3. **Synthesize as Organizer** (per [Iteration limits](../SKILL.md#iteration-limits)):
    - `accept` → proceed to Close.
    - `fix-ups-needed`, *trivial* (typo-class, single-line) → the Organizer applies them directly and proceeds. Trivial fixups are uncapped.
-   - `fix-ups-needed`, *non-trivial* → re-dispatch the implementer ONCE (prefer `SendMessage(to: <implementer agentId>)` when it was a main-loop `Agent`; inside a Workflow this is a fresh `agent()` call carrying the diff path), then re-stage the diff and re-dispatch the Critic once.
+   - `fix-ups-needed`, *non-trivial* → dispatch ONE fresh implementer subagent carrying the Critic's review file path and the affected file list (the original implementers lived inside the subagent-driven-development invocation and are gone), then re-stage the diff and re-dispatch the Critic once.
    - `redo`, or the re-dispatch did not converge → true blocker: file `sleeper-tasks`, mark the goal `blocked`, continue to the next goal.
 
 4. **Append a Decision Log entry** referencing `phase-review-critic.md` by path — verdict, decision, ≤40-word rationale. Do NOT inline the review body.

@@ -75,7 +75,7 @@ Follows the [Subagent return shape](../SKILL.md#subagent-return-shape-disk-first
 5. **If verdict is `needs-revision`** — re-engage BP exactly once with a tightened prompt (the Organizer's note on what to fix), per the [Iteration limits](../SKILL.md#iteration-limits) cap. Prefer `SendMessage(to: <BP agentId>)` to continue the same BP subagent with its context intact (main-loop dispatch only). If the second pass still says `needs-revision`, file a `sleeper-tasks` follow-up and ship what's there.
 
 6. **Perform external state changes:**
-   - CODE: `git commit -F <run-dir>/close/<Gn>-commit-msg.txt`. The `-F` form means the commit message never enters Organizer context as inline text.
+   - CODE: `git commit -F <run-dir>/close/<Gn>-commit-msg.txt`, then `git push`. The `-F` form means the commit message never enters Organizer context as inline text. The push is part of the gate — per-task commits made during Execute leave the branch ahead of origin, and "done" means pushed, not just committed.
    - RESEARCH: BP already wrote the wiki entry and updated INDEX.md. The wiki repo is auto-committed by the `thoughts-autocommit` PM2 service (30s debounce) — no manual git needed. Then `sfl meta add` an idea pointing to the article path.
    - MIXED: do both.
 
