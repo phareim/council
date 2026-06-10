@@ -240,6 +240,10 @@ function cmdRunEnd(db, runId, flags) {
   if (!['done', 'partial', 'aborted'].includes(flags.status)) {
     usageError('run-end requires --status <done|partial|aborted>');
   }
+  const runExists = db.prepare(`SELECT 1 FROM runs WHERE id = ? LIMIT 1`).get(runId);
+  if (!runExists) {
+    fail(`run-end refused: unknown run '${runId}' — run-start it first.`, 1);
+  }
   const hasReview = db.prepare(
     `SELECT 1 FROM reflections WHERE run_id = ? AND kind = 'self-review' LIMIT 1`
   ).get(runId);
