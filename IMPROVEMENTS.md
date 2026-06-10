@@ -1,6 +1,6 @@
 # Council process improvements
 
-**Status:** all items shipped. Original batches (P1–P3) landed 2026-05-10; P4 disk-first hardening landed 2026-05-25; P5 (Opus 4.8 + new Claude Code capabilities) landed 2026-05-30. Open decisions resolved: `INTERRUPT.md` is freeform; iteration-limit standard adopted as proposed (1 re-dispatch + trivial-unlimited at Review); this file kept at repo root as a record of the work.
+**Status:** all items shipped. Original batches (P1–P3) landed 2026-05-10; P4 disk-first hardening landed 2026-05-25; P5 (Opus 4.8 + new Claude Code capabilities) landed 2026-05-30; P6 corrections & metabolism landed 2026-06-10. Open decisions resolved: `INTERRUPT.md` is freeform; iteration-limit standard adopted as proposed (1 re-dispatch + trivial-unlimited at Review); this file kept at repo root as a record of the work.
 
 A working list of process issues identified during the post-extraction review (2026-05-10), with proposed fixes. Items are ordered by leverage — top items will compound across all future runs and should ship first.
 
@@ -184,6 +184,25 @@ Identified during a session about making `/council` survive much longer runs (to
 
 **Deferred (intentionally NOT in the always-loaded skill body).** Recurring/scheduled councils via `CronCreate`, and `ScheduleWakeup` to wait on external state, are out of scope for a single run — recorded here rather than bloating `SKILL.md`. If pursued: a cron agent that invokes `/council` with a standing goal set, writing to the same `~/council/runs/` tree.
 
+## P6 — Corrections & metabolism (2026-06-10)
+
+**Status:** shipped. Identified by the council's own self-review run (`~/council/runs/2026-06-10-0621-review-council-skill/`) — the first audit of documentation against actual run-directory evidence.
+
+### P6.1 Fix the P4 stragglers
+`personalities/organizer.md` still mandated reading full responses and pasting them "verbatim" into gate artifacts — the exact pattern P4 eliminated everywhere else; the primer the main session loads at Intake was never updated. Also: `gates/frame.md` dangled a "see spec" reference and an incoherent rerun count; `modes/code.md` told the Organizer to copy full plan bodies into the run dir against `gates/plan.md`'s stub rule. All corrected.
+
+### P6.2 Review gate per-task → per-phase
+The per-task dual review never executed: both 2026-05-27 CODE runs have empty `work/` dirs, while `superpowers:subagent-driven-development`'s internal spec+quality reviews (per task) and final whole-implementation review covered the technical ground, and the plan-gate Critic caught the HIGH bugs. The gate is now ONE Critic assumption review per goal on the cumulative diff, after Execute. Lesson recorded: protocol denser than what gets executed is not safety, it is noise.
+
+### P6.3 Parking lot + fast path + skill refresh
+`<run-dir>/parking-lot.md` — append-only one-liner channel for out-of-scope findings, harvested at Report. Small-goal Frame fast path (skip Starter when Librarian is empty + goal is S-sized). Skill table gained `systematic-debugging` (CODE blockers) and `deep-research` (web-heavy RESEARCH delegate).
+
+### Considered and declined
+- **Ad-hoc Specialist slot** (Frame-nominated, skill-backed domain reviewer): no run failed for lack of one, and the Organizer can already embed any skill in any dispatch when a plan calls for it. Codifying a slot adds protocol density for a hypothetical.
+- **New persistent personalities** (Historian, Verifier, ...): the five roles cover generative / adversarial / retrieval / synthesis / polish; verification is already a skill invocation at Close.
+- **`verify` skill at Close**: redundant with `superpowers:verification-before-completion`.
+- **Measurement debts** (P2.3 BP-pass value, P4.1 on-demand read frequency): deferred to the G2 meta-learning database, which is the mechanism that should pay them.
+
 ## Sequencing
 
 - **Batch A (one session, ~1 h):** P1.1, P1.2, P1.3 — all small, all high-leverage. Land together.
@@ -191,6 +210,7 @@ Identified during a session about making `/council` survive much longer runs (to
 - **Batch C (defer):** P3.1, P3.2 — clarity-only changes, ship when convenient.
 - **Batch D (2026-05-25):** P4.1 — long-running session hardening via disk-first subagent returns.
 - **Batch E (2026-05-30):** P5 — Opus 4.8 + new Claude Code capabilities (Workflow fan-out, schema returns, SendMessage re-dispatch, model tiers, worktree isolation, ToolSearch, budget, plan-mode prohibition).
+- **Batch F (2026-06-10):** P6 — corrections & metabolism (organizer.md/frame.md/code.md fixes, per-phase Review gate, parking lot, fast path, skill-table refresh).
 
 Run `/council` against this repo with one or two real goals once Batch A lands — empirical signal beats speculation. After 2–3 real runs, revisit P2.1 (iteration-limit standard); the data may suggest a different default than the one proposed here.
 
