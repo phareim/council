@@ -21,8 +21,9 @@ Read `personalities/organizer.md` and behave as the Organizer for the rest of th
    a. Frame gate      — gates/frame.md (Librarian recall, then parallel Starter+Critic, mode classification)
    b. Plan gate       — gates/plan.md (mode-specific draft + critique)
    c. Execute         — modes/<mode>.md (CODE / RESEARCH / MIXED)
+   c2. Review gate    — gates/review.md (CODE only: one Critic assumption review on the cumulative diff)
    d. Close gate      — gates/close.md (Beautiful Person, external state changes)
-2. Report             — assemble templates/report.md, print + save
+2. Report             — self-review into the learning db (learning.md), assemble templates/report.md, print + save
 ```
 
 ## Step 0 — Intake

@@ -212,10 +212,10 @@ The per-task dual review never executed: both 2026-05-27 CODE runs have empty `w
 - **Batch E (2026-05-30):** P5 — Opus 4.8 + new Claude Code capabilities (Workflow fan-out, schema returns, SendMessage re-dispatch, model tiers, worktree isolation, ToolSearch, budget, plan-mode prohibition).
 - **Batch F (2026-06-10):** P6 — corrections & metabolism (organizer.md/frame.md/code.md fixes, per-phase Review gate, parking lot, fast path, skill-table refresh).
 
-Run `/council` against this repo with one or two real goals once Batch A lands — empirical signal beats speculation. After 2–3 real runs, revisit P2.1 (iteration-limit standard); the data may suggest a different default than the one proposed here.
+(Historical note: the original "validate Batch A in a real run before Batch B" advice was followed — see `~/council/runs/`. Iteration-limit revisits now route through the learning db, `learning.md`.)
 
-## Open decisions (please weigh in)
+## Open decisions — resolved
 
-1. **`INTERRUPT.md` format** — freeform text vs. structured (priority/scope fields)?
-2. **Iteration-limit standard** — the proposed "1 re-dispatch + trivial-unlimited" — agree, alternative, or keep status quo?
-3. **Where does this live?** — keep this file in repo root, move to `docs/`, or convert each P-item to an `sfl meta` entry under the `council` project?
+1. **`INTERRUPT.md` format** — freeform; the Organizer parses intent.
+2. **Iteration-limit standard** — "1 re-dispatch + trivial-unlimited at Review" adopted as proposed.
+3. **Where does this live?** — this file stays at the repo root as the record of the work.

@@ -50,6 +50,7 @@ After the critique pass converges, run a 30-second Beautiful Person pass on the 
    - If yes: return a one-line "ship as-is" verdict.
    - If no: write your proposed revised outline to <run-dir>/plan/<Gn>-bp-revision.md, and return ONLY the file path + a ≤80-word summary of what you changed and why.
    Do NOT echo the outline back to me.
+   Out-of-scope observations: append one line each to <run-dir>/parking-lot.md — do not put them in your return.
    ```
 
 2. If BP returned a revision, the Organizer reads `<Gn>-bp-revision.md`, applies the smallest version that addresses BP's note to `<run-dir>/plan/<Gn>.md`, and (if the revision is substantive — changes section count or reframes the target artifact) decides whether to re-run the critique pass or accept BP's framing as-is. Drop the revision file from working memory once applied.
