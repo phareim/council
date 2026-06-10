@@ -86,7 +86,7 @@ Follows the [Subagent return shape](../SKILL.md#subagent-return-shape-disk-first
    <reframing + adopted risks + mode classification + reasoning + how Librarian findings shaped the synthesis>
    ```
 
-   The role bodies stay in their per-role files. Do NOT paste them into this index.
+   The role bodies stay in their per-role files. Do NOT paste them into this index. If the small-goal fast path skipped Starter, replace its line with `- Starter: skipped (fast path)`.
 
 6. **Append a Decision Log entry** to `<run-dir>/decisions.md` using `templates/decision.md`.
 
