@@ -28,8 +28,12 @@ function usageError(msg) {
 function openDb() {
   const dbPath = process.env.COUNCIL_DB || path.join(os.homedir(), 'council/data/council.sqlite');
   fs.mkdirSync(path.dirname(dbPath), { recursive: true });
-  const db = new DatabaseSync(dbPath);
-  db.exec(`
+  let db;
+  try {
+    db = new DatabaseSync(dbPath);
+    db.exec('PRAGMA busy_timeout = 5000');
+    db.exec('PRAGMA journal_mode = WAL');
+    db.exec(`
     CREATE TABLE IF NOT EXISTS runs (
       id         TEXT PRIMARY KEY,
       run_dir    TEXT NOT NULL,
@@ -57,16 +61,33 @@ function openDb() {
       text       TEXT NOT NULL
     );
   `);
+  } catch (e) {
+    process.stderr.write(`learn.mjs: cannot open DB at ${dbPath} — ${e.message}\n`);
+    process.stderr.write(`  delete or restore ${dbPath}, it auto-recreates\n`);
+    process.exit(1);
+  }
   return db;
 }
 
+// Known flags per verb (null = no check, for future extensibility).
+const KNOWN_FLAGS = {
+  'run-start': new Set(['dir', 'goals']),
+  'reflect':   new Set(['text', 'goal', 'phase']),
+  'review':    new Set(['file', 'lesson']),
+  'run-end':   new Set(['status', 'register']),
+  'recall':    new Set(['limit', 'grep']),
+  'backfill':  new Set(['runs-dir']),
+};
+
 // --- arg parsing: flags become {flag: value}; --lesson accumulates into an array.
-function parseFlags(argv) {
+function parseFlags(argv, verb) {
+  const known = KNOWN_FLAGS[verb] ?? null;
   const flags = { lesson: [] };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (!a.startsWith('--')) usageError(`unexpected argument: ${a}`);
     const key = a.slice(2);
+    if (known && !known.has(key)) usageError(`unknown flag --${key} for verb '${verb}'`);
     const val = argv[i + 1];
     if (val === undefined) usageError(`missing value for --${key}`);
     i++;
@@ -121,9 +142,12 @@ function runExists(db, runId) {
 }
 
 // --- recall digest (also printed by run-start). Hard cap 40 output lines.
+// CAP = 40 total lines; footer uses 2 lines (overflow notice + runs-recorded),
+// leaving CAP - 2 = 38 lines for lesson rows.
+const CAP = 40;
 function printDigest(db, { limit = 10, grep = null } = {}) {
   const out = [];
-  const shownCap = Math.min(limit, 38);
+  const shownCap = Math.min(limit, CAP - 2);
   let total, rows;
   if (grep) {
     const pat = `%${grep}%`;
@@ -156,7 +180,7 @@ function printDigest(db, { limit = 10, grep = null } = {}) {
   }
   const n = counts.live + counts.backfill;
   out.push(`runs recorded: ${n} (live: ${counts.live}, backfill: ${counts.backfill})`);
-  process.stdout.write(out.slice(0, 40).join('\n') + '\n');
+  process.stdout.write(out.slice(0, CAP).join('\n') + '\n');
 }
 
 // --- verbs -----------------------------------------------------------------
@@ -295,7 +319,7 @@ if (NEEDS_RUN_ID.has(verb)) {
   runId = rest[0];
   flagArgv = rest.slice(1);
 }
-const flags = parseFlags(flagArgv);
+const flags = parseFlags(flagArgv, verb);
 const db = openDb();
 
 switch (verb) {
