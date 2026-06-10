@@ -48,7 +48,9 @@ Read `personalities/organizer.md` and behave as the Organizer for the rest of th
 
 6. **Initialize `decisions.md`** as an empty file with a single header line: `# Decision Log — <RUN_ID>`.
 
-7. **Print to stdout** so the user (watching the transcript) knows what's about to happen:
+7. **Start the learning loop** (see `learning.md`): `<skill-dir>/scripts/learn.mjs run-start "$(basename $RUN_DIR)" --dir "$RUN_DIR" --goals <n>` — it registers the run AND prints the lesson digest from past runs; carry any relevant lessons into Frame-gate prompts as `PRIOR LESSONS:` lines.
+
+8. **Print to stdout** so the user (watching the transcript) knows what's about to happen:
 
    ```
    Council run started.
@@ -84,9 +86,10 @@ For each goal G in `register.md` order:
 When every goal is `done` or `blocked` or `needs-revision`:
 
 1. Assemble `report.md` from `templates/report.md`. Fill in each section.
-2. Print the entire report to stdout.
-3. Save to `<RUN_DIR>/report.md`. If the running harness intercepts `Write` for files named `report.md` (some subagent harnesses do, with a "return text not files" heuristic), fall back to `cat <<'EOF' > "$RUN_DIR/report.md" … EOF` via Bash.
-4. Stop.
+2. **Self-review** (see `learning.md`): answer the four questions into `<RUN_DIR>/self-review.md`; `<skill-dir>/scripts/learn.mjs review <run-id> --file ... --lesson "..."` (1–3 lessons); then `<skill-dir>/scripts/learn.mjs run-end <run-id> --status <done|partial|aborted> --register <RUN_DIR>/register.md` — it refuses to finalize without the self-review. Optional mid-run `reflect` calls are described in `learning.md`.
+3. Print the entire report to stdout.
+4. Save to `<RUN_DIR>/report.md`. If the running harness intercepts `Write` for files named `report.md` (some subagent harnesses do, with a "return text not files" heuristic), fall back to `cat <<'EOF' > "$RUN_DIR/report.md" … EOF` via Bash.
+5. Stop.
 
 ## Mid-run interrupt channel
 

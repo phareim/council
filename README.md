@@ -20,6 +20,7 @@ The skill loads automatically on the next Claude Code session start.
 - **`gates/`** — Frame, Plan, Review, Close procedures.
 - **`modes/`** — CODE, RESEARCH, MIXED Execute pipelines.
 - **`templates/`** — Goal Register, Decision Log entry, final Report.
+- **`scripts/learn.mjs` + `learning.md`** — the meta-learning loop: SQLite memory of past runs (two mandatory writes, one mandatory read; `run-end` refuses to finalize without a self-review).
 - **`IMPROVEMENTS.md`** — record of the process-improvement plan (P1–P6, all items shipped).
 
 ## Design principle: heavy output never transits the Organizer
