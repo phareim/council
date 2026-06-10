@@ -175,9 +175,12 @@ When invoking another skill, use the `Skill` tool with the exact name. Do not re
 | Plan (CODE) | `superpowers:writing-plans` |
 | Execute (CODE) | `superpowers:subagent-driven-development` |
 | Per-task TDD | `superpowers:test-driven-development` (inside subagent-driven-development) |
+| Per-task review | internal to `superpowers:subagent-driven-development` (spec + quality, per task) |
+| Phase review (CODE, once per goal) | `gates/review.md` — Critic assumption review on the cumulative diff |
+| Debugging an in-flight failure | `superpowers:systematic-debugging` |
 | Execute-phase fan-out (≥3 units) | `Workflow` tool — see [Fan-out execution](#fan-out-execution-the-workflow-tool) |
 | Interruptible fan-out (exception) | `superpowers:dispatching-parallel-agents` |
-| Per-task review | `superpowers:requesting-code-review` |
+| Web-heavy RESEARCH execute | `deep-research` skill (optional wholesale delegate — see `modes/research.md`) |
 | Verify before close | `superpowers:verification-before-completion` |
 
 ## Important context

@@ -38,7 +38,7 @@ Follows the [Subagent return shape](../SKILL.md#subagent-return-shape-disk-first
 
 After both research and code tracks complete, before invoking the Close gate:
 
-1. The Organizer **does not** read the full draft or full diff. It looks only at: the assembled draft's path, the section-subagent key-claim summaries (already in working memory from RESEARCH execute), and the code track's per-task review verdicts (already in working memory from the Review gate). Based on those structured returns, decide whether tension is plausible.
+1. The Organizer **does not** read the full draft or full diff. It looks only at: the assembled draft's path, the section-subagent key-claim summaries (already in working memory from RESEARCH execute), and the code track's phase-review verdict + top findings (from the Review gate). Based on those structured returns, decide whether tension is plausible.
 2. **If tension is plausible**, dispatch a Critic subagent. Embed `personalities/critic.md` system prompt verbatim, then append:
 
    ```

@@ -1,59 +1,52 @@
-# Review gate (per task)
+# Review gate (per Execute phase)
 
-Used during CODE-mode execution after each task in the implementation plan.
+Used during CODE-mode execution **once per goal**, after `superpowers:subagent-driven-development` completes all tasks in the plan and before the Close gate.
 
-Follows the [Subagent return shape](../SKILL.md#subagent-return-shape-disk-first-convention) rule. This gate runs N times per CODE goal — once per task — so its per-cycle context cost compounds faster than any other gate. The reviewers MUST write their full findings to disk and return only verdict + a bounded findings list.
+Follows the [Subagent return shape](../SKILL.md#subagent-return-shape-disk-first-convention) rule.
+
+## Why per-phase, not per-task
+
+`superpowers:subagent-driven-development` already runs a two-stage review per task (spec compliance, then code quality) plus a final whole-implementation review. A council layer on top of that per task was protocol nobody executed: both audited CODE runs (2026-05-27) show empty `work/` dirs and good outcomes, with the high-value catches happening at the *plan* gate instead. What SDD does **not** do is assumption review — are the premises behind the shipped approach still right, did execution invalidate the plan, is the acceptance criterion actually met? That is the council Critic's job, and it needs the cumulative diff, not task-sized fragments.
 
 ## Inputs
-- Task description (from the plan)
-- Task index `<N>` (1-based, from the implementation plan)
-- Diff or commit produced by the implementer
-
-## Why two reviews
-
-The two reviews dispatched at this gate cover different concerns and are not redundant:
-
-- **`superpowers:requesting-code-review`** — structured *technical* review: correctness, conventions, test coverage, regression risk. The skill knows what good code review looks like in code terms.
-- **Critic subagent** — *assumption* review: are the premises behind this approach right? Is the task description still the right thing to be doing? Has something downstream changed that would invalidate this work?
-
-Keep both. Stripping one to "save tokens" loses the orthogonal signal — the technical reviewer won't catch a wrong-problem-being-solved, and the Critic won't catch a missing test case.
+- Goal text + acceptance criterion (from `register.md`)
+- Implementation plan path
+- The cumulative diff for the goal
 
 ## Procedure
 
-1. **Pre-create the reviews directory** once per goal (idempotent):
+1. **Stage the cumulative diff.** `<since-ref>` is the SHA recorded at Execute start (`modes/code.md` records it to `<run-dir>/work/<Gn>/execute-start-sha` before invoking subagent-driven-development):
 
    ```bash
-   mkdir -p "<run-dir>/work/<Gn>/reviews"
+   mkdir -p "<run-dir>/work/<Gn>"
+   git diff $(cat <run-dir>/work/<Gn>/execute-start-sha)..HEAD > <run-dir>/work/<Gn>/phase-diff.patch
    ```
 
-2. **Run two reviews in parallel:**
+2. **Dispatch ONE Critic subagent.** Embed `personalities/critic.md` system prompt verbatim, then append:
 
-   a. Invoke `superpowers:requesting-code-review` via the `Skill` tool. If that skill's harness returns the review body in-band, the Organizer immediately writes it to `<run-dir>/work/<Gn>/reviews/task-<N>-tech.md` and discards the in-band copy. Do not keep the full text in the gate's working synthesis — only the verdict and top findings, extracted in the next step.
+   ```
+   GOAL: <goal text>
+   ACCEPTANCE CRITERION: <from register.md>
+   PLAN FILE: <canonical plan path>
+   DIFF FILE: <run-dir>/work/<Gn>/phase-diff.patch
+   (Read the plan and diff from disk.)
 
-   b. Dispatch a Critic subagent. Embed `personalities/critic.md` system prompt verbatim, then append:
+   This is a whole-goal assumption review, not a line-by-line code review (the implementation pipeline already did that per task). Answer three questions: (1) are the premises behind the shipped approach still right? (2) did anything during execution invalidate the plan's assumptions? (3) does this diff actually meet the acceptance criterion?
 
-      ```
-      TASK: <task description>
-      DIFF FILE: <run-dir>/work/<Gn>/reviews/task-<N>-diff.patch
-      (The Organizer has written the diff to this path. Read it from disk.)
+   OUTPUT DISCIPLINE:
+   1. Write your FULL review to <run-dir>/work/<Gn>/phase-review-critic.md.
+   2. Return to me ONLY:
+      - the file path you wrote to
+      - Verdict: accept | fix-ups-needed | redo
+      - Top 3 findings, each ≤60 words, in the form "[severity] one-line claim — concrete pointer (file:line or plan section)"
+   Do NOT echo the diff or your full review.
+   Out-of-scope observations: append one line each to <run-dir>/parking-lot.md — do not put them in your return.
+   ```
 
-      Review this diff with your adversarial perspective.
+3. **Synthesize as Organizer** (per [Iteration limits](../SKILL.md#iteration-limits)):
+   - `accept` → proceed to Close.
+   - `fix-ups-needed`, *trivial* (typo-class, single-line) → the Organizer applies them directly and proceeds. Trivial fixups are uncapped.
+   - `fix-ups-needed`, *non-trivial* → re-dispatch the implementer ONCE (prefer `SendMessage(to: <implementer agentId>)` when it was a main-loop `Agent`; inside a Workflow this is a fresh `agent()` call carrying the diff path), then re-stage the diff and re-dispatch the Critic once.
+   - `redo`, or the re-dispatch did not converge → true blocker: file `sleeper-tasks`, mark the goal `blocked`, continue to the next goal.
 
-      OUTPUT DISCIPLINE:
-      1. Write your FULL review (Assumptions that may not hold / Failure modes specific to this diff / supporting reasoning) to <run-dir>/work/<Gn>/reviews/task-<N>-critic.md.
-      2. Return to me ONLY:
-         - the file path you wrote to
-         - Verdict: accept | fix-ups-needed | redo
-         - Top 3 findings, each ≤60 words, in the form "[severity] one-line claim — concrete pointer (file:line or test name)"
-      Do NOT echo your full review. The Organizer will read your file if it needs more.
-      ```
-
-   Before dispatching (b), the Organizer writes the diff to `<run-dir>/work/<Gn>/reviews/task-<N>-diff.patch` via Bash (`git diff <since-ref>..HEAD > ...`) so neither the Critic nor the gate's working synthesis has to carry the diff in-band.
-
-3. **Synthesize as Organizer** (per [Iteration limits](../SKILL.md#iteration-limits)) using only the two structured returns — verdicts + top-3 findings. If the findings conflict or feel under-specified, `Read` the relevant per-reviewer file on demand, then drop it from working memory after the decision is logged. Possible outcomes:
-   - Both accept → mark task done, move on.
-   - One says fix-ups, *trivial* (typo-class, single-line, the Organizer can fix in place) → apply directly and re-review. Trivial fixups are uncapped.
-   - One says fix-ups, *non-trivial* → re-dispatch the implementer ONCE to address; then re-review. When the implementer was a main-loop `Agent`, prefer `SendMessage(to: <implementer agentId>)` to continue it with its context intact over a cold restart. (Inside a Workflow this isn't available — the re-dispatch is a fresh `agent()` call carrying the prior diff's path.)
-   - Either says redo, OR the implementer re-dispatch did not converge → declare a true blocker on this goal: file a `sleeper-tasks` entry and move to the next goal.
-
-4. **Append a Decision Log entry.** The entry references the two reviewer files by path; it does NOT inline their bodies. Acceptable format: `tech-review: <path> — <verdict>; critic-review: <path> — <verdict>; decision: <accept | fixup | redo | blocker>; rationale: <≤40 words>`.
+4. **Append a Decision Log entry** referencing `phase-review-critic.md` by path — verdict, decision, ≤40-word rationale. Do NOT inline the review body.
