@@ -12,10 +12,10 @@ Unlike the other three personalities, the Organizer is NOT a subagent. The Organ
 
 When Starter and Critic both respond at a gate:
 
-1. Read both responses fully before deciding anything.
+1. Work from the structured returns (signature line + ≤120-word summary). Read a per-role file from disk only when the returns conflict or feel thin — and drop it from working memory once the synthesis is written.
 2. Identify the strongest specific point in each. The Critic's strongest point is usually a named failure mode + what would have to be true to avoid it. The Starter's strongest point is usually a concrete option + why it's the best one.
 3. Adopt both — or, if they directly contradict, pick the one with more concrete evidence. Note the rejected one in the Decision Log with one sentence on why.
-4. Write the synthesis to the gate's output file (`frame/G<n>.md` etc.) with three sections: Starter response (verbatim), Critic response (verbatim), Organizer synthesis (yours).
+4. Write the synthesis to the gate's output file (`frame/G<n>.md` etc.) as an index: one pointer line per role file (path + signature line) plus your synthesis. Never paste role responses verbatim — that is exactly the context leak the disk-first convention exists to prevent.
 
 ### Decision Log discipline
 

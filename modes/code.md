@@ -4,7 +4,7 @@ Used when the goal changes code in a repo and produces no separate knowledge art
 
 ## Plan step
 
-Invoke `superpowers:writing-plans` via the `Skill` tool. The implementation plan is saved to that skill's standard location (`docs/superpowers/plans/...`). Copy the resulting plan markdown into `<run-dir>/plan/<Gn>.md` for council-local reference.
+Invoke `superpowers:writing-plans` via the `Skill` tool. The implementation plan is saved to that skill's standard location (`docs/superpowers/plans/...`). Record a council-local stub at `<run-dir>/plan/<Gn>.md` — `Plan: <canonical-path>` plus the acceptance criterion — per the Plan gate. Do not copy the plan body; the path is the reference.
 
 Then run the Plan gate's critique pass (`gates/plan.md` step 2-4) on the plan.
 
