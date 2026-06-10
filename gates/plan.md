@@ -37,6 +37,7 @@ Follows the [Subagent return shape](../SKILL.md#subagent-return-shape-disk-first
       - Verdict: ship-as-is | small-fixes-needed | needs-rework
       - Top 3 findings, each ≤60 words, in the form "[severity] one-line claim — concrete pointer (plan section heading or task number)"
    Do NOT echo the plan or your full critique.
+   Out-of-scope observations: append one line each to <run-dir>/parking-lot.md — do not put them in your return.
    ```
 
 3. **Synthesize as Organizer** using only the two structured returns (verdicts + top-3 findings). If the findings conflict or are too thin to decide, `Read` the relevant per-role critique file on demand, then drop it from working memory after the decision is logged.

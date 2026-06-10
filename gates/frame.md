@@ -28,9 +28,12 @@ Follows the [Subagent return shape](../SKILL.md#subagent-return-shape-disk-first
         - your Recommendation line, verbatim
         - the count of items in each bucket (e.g. "Most relevant: 2, Possibly relevant: 1")
      Do NOT echo the bodies of the items you found. The Organizer will read your file if it needs detail.
+     Out-of-scope observations: append one line each to <run-dir>/parking-lot.md — do not put them in your return.
      ```
 
    Wait for the response.
+
+   **Small-goal fast path.** If the Librarian reports no prior work AND the goal is unambiguous and S-sized (single file or single artifact, no architectural choice to make), the Organizer MAY skip the Starter dispatch and send only the Critic — the Organizer's own action bias stands in for the generative role, same rationale as the no-dispatch-tool fallback below. Note `fast path` in the Decision Log entry. When in doubt, dispatch both; the pair is the default.
 
 2. **Dispatch Starter and Critic in parallel.** Single message, two parallel subagent dispatches via the `Agent` tool (in some harnesses called `Task`; if it appears under `ToolSearch` as a deferred tool, fetch it first with `ToolSearch select:Agent`). If the harness has no subagent-dispatch tool at all, voice ONLY the Critic in-session — write its framing directly to `<run-dir>/frame/<Gn>-critic.md`. Skip Starter — the Organizer's native voice (already biased toward action by virtue of running the show) covers the generative role adequately, and adversarial-from-cold-context is the hardest role to fake while playing both sides. Synthesis discipline applies unchanged. Each call:
    - `subagent_type`: `general-purpose`
@@ -51,6 +54,7 @@ Follows the [Subagent return shape](../SKILL.md#subagent-return-shape-disk-first
      - your signature line, verbatim (Top recommendation / Strongest objection)
      - a ≤120-word synthesis-ready summary (the single thing the Organizer most needs to know from your framing)
      Do NOT echo your full response. The Organizer will read your file if it needs detail.
+     Out-of-scope observations: append one line each to <run-dir>/parking-lot.md — do not put them in your return.
      ```
 
 3. **Wait for both responses.**

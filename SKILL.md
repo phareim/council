@@ -136,6 +136,8 @@ Every subagent dispatch in this skill MUST follow this shape:
 
 If a subagent returns a wall of prose anyway, the Organizer should treat that as the gate's problem (the dispatch prompt was too loose) and tighten it next time — not paste the wall into the gate artifact.
 
+**Parking lot — catching information underway.** Any subagent (and the Organizer) may append one-line out-of-scope observations — a bug spotted in adjacent code, a stale doc, an idea worth filing — to `<run-dir>/parking-lot.md`. Dispatch prompts SHOULD end their OUTPUT DISCIPLINE block with the standing line: `Out-of-scope observations: append one line each to <run-dir>/parking-lot.md — do not put them in your return.` At Report time the Organizer reads the file once, files items worth keeping (`sleeper-tasks` if substantive, `sfl meta add` if idea-shaped), and lists them under the Report's Parking lot section. No schema, no gate — it is an append-only scratch channel so mid-run gold stops evaporating.
+
 The same rule applies to Skill-tool invocations whose output the Organizer doesn't need to act on directly: prefer skills that write to disk (e.g. `superpowers:writing-plans` saves to `docs/superpowers/plans/...`) and record only the path + acceptance criteria in the Decision Log.
 
 ### Fan-out execution: the Workflow tool

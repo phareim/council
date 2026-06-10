@@ -41,6 +41,7 @@ Follows the [Subagent return shape](../SKILL.md#subagent-return-shape-disk-first
       - Followups file path (or "none")
       - ≤60-word rationale
    Do NOT echo the commit message or the followups.
+   Out-of-scope observations: append one line each to <run-dir>/parking-lot.md — do not put them in your return.
    ```
 
    **RESEARCH:**
@@ -64,6 +65,7 @@ Follows the [Subagent return shape](../SKILL.md#subagent-return-shape-disk-first
       - Followups file path (or "none")
       - ≤60-word rationale
    Do NOT echo the wiki entry.
+   Out-of-scope observations: append one line each to <run-dir>/parking-lot.md — do not put them in your return.
    ```
 
    **MIXED:** combine both blocks; BP writes both the commit message and the wiki entry to their respective paths.

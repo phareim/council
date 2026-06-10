@@ -55,6 +55,7 @@ After both research and code tracks complete, before invoking the Close gate:
       - Verdict: consistent | minor-conflicts | major-conflicts
       - Up to 5 conflicts, each ≤40 words, in the form "[location] one-line claim — recommended resolution (edit draft.md | edit code | reconcile in commit message)"
    Do NOT echo either output or your full analysis.
+   Out-of-scope observations: append one line each to <run-dir>/parking-lot.md — do not put them in your return.
    ```
 
 3. Apply the Critic's resolutions by editing the affected output(s) before Close. Use `Edit` against the specific files; do not pull the full bodies into Organizer context.

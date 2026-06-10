@@ -56,6 +56,8 @@ After the critique pass converges, run a 30-second Beautiful Person pass on the 
 
 ## Execute step
 
+**Web-heavy goals:** if the goal is predominantly external web research (most sources are URLs, little internal synthesis), consider delegating the whole Execute step to the `deep-research` skill instead of this pipeline — it ships its own fan-out → verify → synthesize loop. Keep the council's Plan and Close gates around it; its output lands in `<run-dir>/work/<Gn>/draft.md` like any other draft.
+
 **For ≥3 sections, run the whole fan-out as a `Workflow`** (section drafting → an in-script Assembler → the Critic-on-draft) — see [Fan-out execution](../SKILL.md#fan-out-execution-the-workflow-tool). The script holds section bodies in vars, still writes each section + `draft.md` + `critic-pass.md` to the run dir, and returns ONLY a thin manifest (paths + word/source counts + critic verdict + ≤5 fixes). Give each `agent()` a JSON `schema` matching the return shapes below; a re-dispatch inside the Workflow is a cold `agent()` call carrying the prior section's path (no `SendMessage`). `log()` a line before launch and a digest after. Keep the section/Assembler fan-out as main-loop `superpowers:dispatching-parallel-agents` instead only when you need it interruptible mid-run (a Workflow can't be).
 
 For <3 sections, or in the interruptible case, dispatch in the main loop sequentially or in pairs. Either way, each research subagent gets:
@@ -76,6 +78,7 @@ For <3 sections, or in the interruptible case, dispatch in the main loop sequent
      - up to 3 open questions you couldn't resolve
      - source count (number of distinct URLs cited)
   Do NOT echo the section body. The Organizer / assembler will read your file.
+  Out-of-scope observations: append one line each to <run-dir>/parking-lot.md — do not put them in your return.
   ```
 
 The Organizer's working memory after all section dispatches: N short structured returns. No section bodies.
@@ -108,6 +111,7 @@ After all sections are in:
      - distinct source count
      - any sections you had to skip or flag as incoherent (with a one-line reason each)
      Do NOT echo the draft.
+     Out-of-scope observations: append one line each to <run-dir>/parking-lot.md — do not put them in your return.
      ```
 
 2. **Dispatch a Critic subagent on the assembled draft.** Embed `personalities/critic.md` system prompt verbatim, then append:
@@ -125,6 +129,7 @@ After all sections are in:
       - Verdict: accept | targeted-fixes | rework
       - Up to 5 targeted fixes, each ≤40 words, in the form "[paragraph or section anchor] one-line claim — concrete fix"
    Do NOT echo the draft or your full review.
+   Out-of-scope observations: append one line each to <run-dir>/parking-lot.md — do not put them in your return.
    ```
 
 3. **Apply fixes.** If the verdict is `targeted-fixes`, the Organizer applies them directly to `draft.md` using the per-fix anchors (Edit tool, not full rewrites). If the verdict is `rework`, dispatch the Assembler ONCE more with the Critic's findings file path in its prompt; then ship whichever version is stronger (per the council-wide iteration cap).
