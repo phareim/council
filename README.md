@@ -20,7 +20,7 @@ The skill loads automatically on the next Claude Code session start.
 - **`gates/`** — Frame, Plan, Review, Close procedures.
 - **`modes/`** — CODE, RESEARCH, MIXED Execute pipelines.
 - **`templates/`** — Goal Register, Decision Log entry, final Report.
-- **`IMPROVEMENTS.md`** — record of the process-improvement plan (P1–P5, all items shipped).
+- **`IMPROVEMENTS.md`** — record of the process-improvement plan (P1–P6, all items shipped).
 
 ## Design principle: heavy output never transits the Organizer
 
