@@ -1,6 +1,6 @@
 # Council process improvements
 
-**Status:** all items shipped. Original batches (P1–P3) landed 2026-05-10; P4 disk-first hardening landed 2026-05-25; P5 (Opus 4.8 + new Claude Code capabilities) landed 2026-05-30; P6 corrections & metabolism landed 2026-06-10. Open decisions resolved: `INTERRUPT.md` is freeform; iteration-limit standard adopted as proposed (1 re-dispatch + trivial-unlimited at Review); this file kept at repo root as a record of the work.
+**Status:** all items shipped. Original batches (P1–P3) landed 2026-05-10; P4 disk-first hardening landed 2026-05-25; P5 (Opus 4.8 + new Claude Code capabilities) landed 2026-05-30; P6 corrections & metabolism landed 2026-06-10; P7 long-run/sparse-goal fit landed 2026-07-21. Open decisions resolved: `INTERRUPT.md` is freeform; iteration-limit standard adopted as proposed (1 re-dispatch + trivial-unlimited at Review); this file kept at repo root as a record of the work.
 
 A working list of process issues identified during the post-extraction review (2026-05-10), with proposed fixes. Items are ordered by leverage — top items will compound across all future runs and should ship first.
 
@@ -203,6 +203,18 @@ The per-task dual review never executed: both 2026-05-27 CODE runs have empty `w
 - **`verify` skill at Close**: redundant with `superpowers:verification-before-completion`.
 - **Measurement debts** (P2.3 BP-pass value, P4.1 on-demand read frequency): deferred to the G2 meta-learning database, which is the mechanism that should pay them.
 
+## P7 — Long-run / sparse-goal fit (2026-07-21)
+
+**Status:** shipped. Motivated by a full skill review (Fable 5) against the run evidence: the disk-first work (P4/P5) solved *executing* at length, but the skill's actual niche — long unattended runs on large, sparsely defined goals — still lacked (a) an early dense moment for the human to correct a wrong interpretation, (b) incremental structure so scale doesn't become one monolithic gate cycle, (c) durability across session death, (d) visibility proportional to run length. Five mechanisms, each replacing a failure mode rather than adding a checkpoint (P6.2's lesson observed):
+
+- **P7.1 Charter** — Frame sizes every goal S/M/L; L-sized goals get `frame/<Gn>-charter.md` (reading, scope in/out, top-3 risky assumptions, ambition tier), printed to stdout as the one sanctioned banner exception. Attacks "confidently wrong for two hours" by giving `INTERRUPT.md` a target while redirection is cheap.
+- **P7.2 Milestone decomposition** — L-sized goals split risk-first into 2–5 milestones in `register.md`; M1 is the walking skeleton; each milestone runs its own Plan→Execute→Review→Close and *ships* at Close. More gate boundaries = more interrupt reads; wrong assumptions surface as a small shipped M1.
+- **P7.3 Deterministic resume** — `/council resume <run-dir>`: rebuild from `register.md` + `STATUS.md` + last Decision Log entry; re-enter at the first missing index artifact (gates are re-entrant by construction — completion IS the artifact). Half-done executes reconcile against git ground truth, never redo shipped work.
+- **P7.4 Status heartbeat** — `STATUS.md` overwritten at every gate boundary and Workflow launch/digest (`templates/status.md`); optional single sleeper-tasks mirror for >1 h runs, commented only at milestone Closes. No chat fanout.
+- **P7.5 Drift checks** — during long CODE executes, a one-beat plan-decay check after each Workflow stage (~5 tasks); in-place plan amendments are uncapped and logged as `amendment`, distinct from the capped revision loops.
+
+Not done (deliberately): new personalities, more review passes, structured INTERRUPT formats, a supervisor process — all ceremony without an observed failure mode. The `remind-commit-push` Stop-hook friction is mostly dissolved by per-milestone commits (P7.2); a run-dir-aware hook exemption remains open if it still stings.
+
 ## Sequencing
 
 - **Batch A (one session, ~1 h):** P1.1, P1.2, P1.3 — all small, all high-leverage. Land together.
@@ -211,6 +223,7 @@ The per-task dual review never executed: both 2026-05-27 CODE runs have empty `w
 - **Batch D (2026-05-25):** P4.1 — long-running session hardening via disk-first subagent returns.
 - **Batch E (2026-05-30):** P5 — Opus 4.8 + new Claude Code capabilities (Workflow fan-out, schema returns, SendMessage re-dispatch, model tiers, worktree isolation, ToolSearch, budget, plan-mode prohibition).
 - **Batch F (2026-06-10):** P6 — corrections & metabolism (organizer.md/frame.md/code.md fixes, per-phase Review gate, parking lot, fast path, skill-table refresh).
+- **Batch G (2026-07-21):** P7 — long-run/sparse-goal fit (charter, milestones, resume, status heartbeat, drift checks).
 
 (Historical note: the original "validate Batch A in a real run before Batch B" advice was followed — see `~/council/runs/`. Iteration-limit revisits now route through the learning db, `learning.md`.)
 

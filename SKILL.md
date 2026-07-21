@@ -16,14 +16,18 @@ Read `personalities/organizer.md` and behave as the Organizer for the rest of th
 ## Lifecycle
 
 ```
-0. Intake             — parse goals, build run directory, write Goal Register
+0. Intake             — parse goals, build run directory, write Goal Register + STATUS.md
 1. Per goal G in order:
-   a. Frame gate      — gates/frame.md (Librarian recall, then parallel Starter+Critic, mode classification)
-   b. Plan gate       — gates/plan.md (mode-specific draft + critique)
-   c. Execute         — modes/<mode>.md (CODE / RESEARCH / MIXED)
-   c2. Review gate    — gates/review.md (CODE only: one Critic assumption review on the cumulative diff)
-   d. Close gate      — gates/close.md (Beautiful Person, external state changes)
+   a. Frame gate      — gates/frame.md (Librarian recall, then parallel Starter+Critic, mode classification;
+                        L-sized/sparse goals additionally get a printed charter + a risk-first milestone split)
+   Per milestone M of G (an unsplit goal is one implicit milestone):
+      b. Plan gate    — gates/plan.md (mode-specific draft + critique)
+      c. Execute      — modes/<mode>.md (CODE / RESEARCH / MIXED; drift checks on long executes)
+      c2. Review gate — gates/review.md (CODE only: one Critic assumption review on the cumulative diff)
+      d. Close gate   — gates/close.md (Beautiful Person, external state changes; every milestone ships)
 2. Report             — self-review into the learning db (learning.md), assemble templates/report.md, print + save
+
+Resuming a dead session: see "Resuming a run" — the run dir rebuilds the state; re-entry is deterministic.
 ```
 
 ## Step 0 — Intake
@@ -47,7 +51,7 @@ Read `personalities/organizer.md` and behave as the Organizer for the rest of th
 
 5. **Write `register.md`** from `templates/register.md`. Substitute `<RUN_ID>`, `<RUN_TIMESTAMP_UTC>`, `<RUN_DIR_ABSOLUTE_PATH>`. Add one block per goal (G1, G2, ...) with `<GOAL_TEXT>` filled in and `Mode: pending`, `Status: pending`.
 
-6. **Initialize `decisions.md`** as an empty file with a single header line: `# Decision Log — <RUN_ID>`.
+6. **Initialize `decisions.md`** as an empty file with a single header line: `# Decision Log — <RUN_ID>`. **Initialize `STATUS.md`** from `templates/status.md` with `Phase: intake` — see [Run status heartbeat](#run-status-heartbeat).
 
 7. **Start the learning loop** (see `learning.md`): `<skill-dir>/scripts/learn.mjs run-start "$(basename $RUN_DIR)" --dir "$RUN_DIR" --goals <n>` — it registers the run AND prints the lesson digest from past runs; carry any relevant lessons into Frame-gate prompts as `PRIOR LESSONS:` lines.
 
@@ -60,23 +64,25 @@ Read `personalities/organizer.md` and behave as the Organizer for the rest of th
    Mid-run course-correct: write to <RUN_DIR>/INTERRUPT.md
    ```
 
-   This is the LAST stdout-only update until Report. From here on, all updates are file-based.
+   This is the LAST stdout-only update until Report, with ONE sanctioned exception: the goal **charter** (`gates/frame.md`) is printed when Frame produces one — it is the artifact the user needs to see early to use the interrupt channel well. All other updates are file-based; `STATUS.md` is the live view.
 
 ## Step 1 — Per-goal loop
 
 For each goal G in `register.md` order:
 
-**Before each gate (steps 2–5 below), the Organizer performs the interrupt check** — see [Mid-run interrupt channel](#mid-run-interrupt-channel).
+**Before each gate, the Organizer performs the interrupt check** — see [Mid-run interrupt channel](#mid-run-interrupt-channel) — **and refreshes `STATUS.md`** — see [Run status heartbeat](#run-status-heartbeat).
 
 1. Mark G `in-flight` in `register.md`.
-2. Run the **Frame gate** (`gates/frame.md`). Produces `frame/G<n>.md` with synthesis and Mode.
-3. Run the **Plan gate** (`gates/plan.md`). Produces `plan/G<n>.md`.
-4. Run **Execute** per Mode:
-   - CODE → `modes/code.md`
-   - RESEARCH → `modes/research.md`
-   - MIXED → `modes/mixed.md`
-5. Run the **Close gate** (`gates/close.md`). Produces `close/G<n>.md` and external state changes.
-6. Mark G `done` (or `blocked` / `needs-revision`) in `register.md`.
+2. Run the **Frame gate** (`gates/frame.md`). Produces `frame/G<n>.md` with synthesis and Mode. For L-sized/sparse goals it also prints a charter and writes a **milestone split** (M1, M2, …) into `register.md` — see `gates/frame.md`.
+3. **Per milestone M of G**, in split order. Within a milestone cycle, every `<Gn>` in the gate and mode files reads as `G<n>.M<m>` — e.g. `plan/G1.M2.md`, `work/G1.M2/`, `close/G1.M2-commit-msg.txt`. An unsplit goal runs this once with plain `G<n>` names:
+   a. Run the **Plan gate** (`gates/plan.md`). Produces `plan/G<n>[.M<m>].md`.
+   b. Run **Execute** per Mode:
+      - CODE → `modes/code.md`
+      - RESEARCH → `modes/research.md`
+      - MIXED → `modes/mixed.md`
+   c. Run the **Review gate** (`gates/review.md`, CODE only) on the milestone's cumulative diff.
+   d. Run the **Close gate** (`gates/close.md`). Produces `close/G<n>[.M<m>].md` and external state changes. **Every milestone Close ships** — committed, pushed, verified; "done" is never "staged for later". Update the milestone's status line in `register.md`.
+4. Mark G `done` (or `blocked` / `needs-revision`) in `register.md` when its last milestone closes. A blocked milestone blocks only itself: file it, then continue with the next milestone if independent, else mark the goal `blocked` and move to the next goal.
 
 **On true blocker:** mark `blocked`, file `sleeper-tasks --responsible petter` with a link to `<RUN_DIR>`, continue to the NEXT goal. Do not stop the whole run.
 
@@ -107,6 +113,28 @@ The user's only mid-run channel into the council is `<RUN_DIR>/INTERRUPT.md`. Th
 **Format.** Freeform markdown. The user writes whatever they need to say; the Organizer parses intent.
 
 The Run-start banner (printed at the end of Step 0 Intake) tells the user this channel exists.
+
+## Run status heartbeat
+
+`<RUN_DIR>/STATUS.md` is the live view of the run — the answer to "what is the council doing right now?" without a push notification. The Organizer **overwrites** it (never appends) from `templates/status.md` at every gate boundary and after every Workflow launch/digest `log()` line. Ten lines, always current: run id, goal + milestone, phase, last artifact path, next expected boundary, timestamp. Together with `register.md` it makes any run inspectable from outside in two reads — including telling which of many run dirs is live.
+
+**Optional task mirror (long runs only).** If Intake expects a run to exceed ~an hour, create ONE `sleeper-tasks` task ("Council run `<RUN_ID>` — live; status: `<RUN_DIR>/STATUS.md`", responsible petter) and comment on it only at milestone Closes and at Report. No chat fanout, no per-gate comments — the heartbeat is a file; the task is just its pointer.
+
+## Resuming a run
+
+A session can die mid-run (crash, restart, unrecoverable context loss). The run dir is the Organizer's real memory; the conversation is a cache. Invocation: `/council resume <run-dir>` (the goals string starts with `resume`).
+
+1. **Rebuild state from three reads:** `register.md`, `STATUS.md`, and the LAST entry of `decisions.md`. Do not re-read gate role files or plan bodies — the indexes are the state; deeper files are read on demand exactly as in a live run.
+2. **Skip Intake.** The run is already registered in the learning db (`run-start` was called); `learn.mjs recall --grep <keyword>` is optional if re-orientation needs it.
+3. **Re-enter at the first goal not `done`/`blocked`, at the first gate whose index artifact is missing** — the artifact-existence state machine:
+   - `frame/G<n>.md` missing → Frame gate
+   - `plan/G<n>[.M<m>].md` missing → Plan gate
+   - Execute incomplete (STATUS says `execute`; CODE: `work/…/execute-start-sha` exists but no `phase-diff.patch`) → Execute
+   - `close/G<n>[.M<m>].md` missing → Close gate
+4. **Half-done Execute:** a Workflow is resumable (`resumeFromRunId`) only within the SAME session — after a session death, treat the committed work as ground truth instead: `git log <execute-start-sha>..HEAD` (CODE) or the section files present on disk (RESEARCH), amend the plan to the remaining delta (a drift-check amendment, not a re-plan), and continue. Do not redo work that already shipped.
+5. **Log a Decision entry** with `Source: resume` in the Context line, naming where re-entry happened, then run normally.
+
+This works because every gate is re-entrant by construction: a gate's completion IS the existence of its index artifact, and every gate reads its inputs from disk, not from conversation memory. Keep it that way when editing gates.
 
 ## Iteration limits
 
@@ -156,7 +184,7 @@ Five rules make a council Workflow safe — the first two are load-bearing:
 2. **Final artifacts still go to disk.** Skip the disk write only for hand-offs *between agents in the same script* (an in-script Assembler reads sections from vars). The phase's final outputs — `draft.md`, `critic-pass.md`, each section — MUST still be written to the run dir. The Organizer's drill-in synthesis runs *after* the script exits, when vars are gone, and reaches only disk; the run dir stays the source of truth and the audit trail.
 3. **Schema, not prose.** Encode each contract as a JSON `schema` on `agent()` (validated, auto-retried). The prose OUTPUT DISCIPLINE blocks remain the contract for plain main-loop `Agent` dispatch, which has no schema enforcement.
 4. **Re-dispatch inside a Workflow is cold.** `SendMessage` (continue an agent with its context intact) is a main-loop tool — not callable from a Workflow script. The one allowed re-dispatch inside a Workflow is a fresh `agent()` call; pass the prior attempt's disk path in its prompt to carry context.
-5. **Visibility + the interrupt blind window.** Background Workflows emit progress to `/workflows`, not the transcript, and cannot be interrupted mid-run. So `log()` one line before launch (`"delegated <phase> for <Gn> → workflow <id>; watch /workflows"`) and a one-line digest after it returns, keeping phase boundaries visible. INTERRUPT.md is honored at the gate *before* the Workflow launches and the gate *after* it returns — but a nudge written *during* a long fan-out waits until the phase finishes. If a goal needs finer interrupt granularity, keep that fan-out as `superpowers:dispatching-parallel-agents` in the main loop instead.
+5. **Visibility + the interrupt blind window.** Background Workflows emit progress to `/workflows`, not the transcript, and cannot be interrupted mid-run. So `log()` one line before launch (`"delegated <phase> for <Gn> → workflow <id>; watch /workflows"`) and a one-line digest after it returns, keeping phase boundaries visible — and record the workflow's runId + persisted script path in the gate's Decision Log entry (same-session resume depends on them). INTERRUPT.md is honored at the gate *before* the Workflow launches and the gate *after* it returns — but a nudge written *during* a long fan-out waits until the phase finishes. If a goal needs finer interrupt granularity, keep that fan-out as `superpowers:dispatching-parallel-agents` in the main loop instead.
 
 **Resume (single-run scope only).** A killed fan-out resumes via `Workflow({scriptPath, resumeFromRunId})` — completed `agent()` calls replay from cache. This recovers an in-flight *phase*, not the whole session: `register.md` and `decisions.md` on disk rebuild the Organizer's state on re-read, but in-flight gate context does not survive, so a resumed run re-enters at the last completed gate.
 

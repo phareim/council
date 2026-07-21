@@ -18,6 +18,8 @@ Record the starting SHA first (the Review gate's diff anchor):
 
 Invoke `superpowers:subagent-driven-development` via the `Skill` tool with the plan as input. That skill's "continuous execution" rule aligns with the council's no-pausing rule — there should be no pauses between tasks. Its internal two-stage per-task review (spec compliance + code quality) plus final whole-implementation review IS the technical review; the council does not duplicate it per task.
 
+**Drift checks (long executes).** Plans decay while they execute. After each Workflow stage returns (or every ~5 completed tasks in a plain agent-dispatch execute), the Organizer spends one in-session beat against the plan: did this stage's manifest invalidate anything downstream — an interface that came out different from what a later task assumes, a dependency that proved wrong, a task now moot? If yes, **amend**: `Edit` the plan file directly, append a Decision Log entry marked `amendment` (≤2 sentences), refresh `STATUS.md`, and carry on. Amendments are uncapped — they are steering, not iteration; the capped loops (plan revision, implementer re-dispatch) are untouched. If drift invalidates the milestone's acceptance criterion itself, stop the execute and re-enter the Plan gate — that consumes the one plan revision.
+
 After all tasks complete, run the Review gate (`gates/review.md`) ONCE on the cumulative diff — the Critic's assumption-level review of the whole phase.
 
 ## Blockers

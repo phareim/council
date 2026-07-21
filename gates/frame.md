@@ -70,7 +70,21 @@ Follows the [Subagent return shape](../SKILL.md#subagent-return-shape-disk-first
      - Research? Does this goal produce knowledge artifacts to read later? (yes → has research dimension)
      - Code dimension only → CODE. Research dimension only → RESEARCH. Both → MIXED. Neither → rerun rule below.
    - If neither dimension applies, re-run the Frame gate ONCE with a stricter prompt: `"This goal as written has neither a code change nor a knowledge artifact. Reframe it as one or both, OR explain why it cannot be."` If the rerun still yields neither dimension, file the goal to `sleeper-tasks` as needs-clarification and continue to the next goal.
-   - **Write a one-line Acceptance criterion** — concrete terms for what makes this goal "done", referencing mode-specific outputs (e.g. `"commit on main with tests green"`, `"wiki/foo.md reachable from INDEX.md, ≥3 sources cited"`). This goes into `register.md` in step 7 below.
+   - **Size the goal**: S (single file/artifact, unambiguous), M (one plan–execute–close cycle), or L (multi-surface, multi-hour, or sparsely specified — the goal text leaves major interpretation choices to the council). The tiebreak between M and L: *"if my reading of the goal is wrong, when does the user find out?"* If the answer is "at Report", it's L. Record the size in the Decision Log.
+   - **Write a one-line Acceptance criterion** — concrete terms for what makes this goal "done", referencing mode-specific outputs (e.g. `"commit on main with tests green"`, `"wiki/foo.md reachable from INDEX.md, ≥3 sources cited"`). This goes into `register.md` in step 7 below. For L-sized goals, each milestone gets its own criterion (below) and the goal-level line describes the whole.
+
+4b. **L-sized goals only — charter and milestone split.** (S and M goals skip this step entirely; the single-cycle path is unchanged.)
+
+   **Charter.** The worst sparse-goal failure is not a bug — it is hours of confident work on the wrong interpretation. Write `<run-dir>/frame/<Gn>-charter.md`:
+
+   - **Reading** — 2–4 sentences: what the council believes this goal means.
+   - **In scope / Out of scope** — 3–6 bullets each, covering the calls the goal text left open.
+   - **Assumptions most likely to be wrong** — the top 3, each with one line on what the council does if it is wrong.
+   - **Ambition tier** — `spike | v1 | polished`, inferred from the goal wording; default `v1`.
+
+   Then **print the charter to stdout verbatim** — this is the one sanctioned stdout moment after the run banner (SKILL.md Step 0). No pause, no approval; proceed immediately. The point is to give the user something dense to react to through `INTERRUPT.md` while redirection is still cheap — the milestone split below guarantees several gate boundaries (interrupt reads) before the bulk of the work runs.
+
+   **Milestone split.** Decompose the goal into 2–5 milestones, **risk-first**: M1 is the walking skeleton — the smallest end-to-end slice that exercises the assumptions most likely to invalidate the plan (deploy pipeline, auth, data model, the unproven integration). Later milestones layer onto the proven spine. Each milestone runs its own Plan → Execute → Review → Close cycle (SKILL.md Step 1.3) and ships at its Close, so a wrong charter assumption surfaces as a small shipped M1, not a large unshipped G1. Write one milestone block per M into `register.md` (see `templates/register.md`): id, ≤10-word title, one-line acceptance criterion, status.
 
 5. **Write `<run-dir>/frame/<Gn>.md`** as an INDEX, not a transcript:
 
@@ -86,7 +100,7 @@ Follows the [Subagent return shape](../SKILL.md#subagent-return-shape-disk-first
    <reframing + adopted risks + mode classification + reasoning + how Librarian findings shaped the synthesis>
    ```
 
-   The role bodies stay in their per-role files. Do NOT paste them into this index. If the small-goal fast path skipped Starter, replace its line with `- Starter: skipped (fast path)`.
+   The role bodies stay in their per-role files. Do NOT paste them into this index. If the small-goal fast path skipped Starter, replace its line with `- Starter: skipped (fast path)`. For L-sized goals, add `- Charter: ./<Gn>-charter.md — <ambition tier>` to the Role files list and a one-line milestone map (`M1 <title> → M2 <title> → …`) at the end of the synthesis.
 
 6. **Append a Decision Log entry** to `<run-dir>/decisions.md` using `templates/decision.md`.
 
