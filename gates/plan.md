@@ -13,7 +13,7 @@ Follows the [Subagent return shape](../SKILL.md#subagent-return-shape-disk-first
 **Before drafting**, read the most recent `decisions.md` entry for `<Gn>` (typically the Frame gate's). Carry its synthesis forward into your prompt to the subagents below — anchor the plan in what was already decided rather than re-deriving it. Do not re-read the full Frame role files unless the synthesis is insufficient.
 
 1. **Draft the plan via the mode pipeline:**
-   - CODE → invoke `superpowers:writing-plans` via the `Skill` tool. The plan is saved to `docs/superpowers/plans/...` per that skill. Record the canonical plan path and copy a council-local reference into `<run-dir>/plan/<Gn>.md` (a stub: `Plan: <canonical-path>` plus the acceptance criterion). The Organizer should NOT hold the full plan markdown in working memory after this step — only the path.
+   - CODE → invoke `superpowers:writing-plans` via the `Skill` tool (absent? → use its fallback from the composition table in `SKILL.md`; the stub rule below is unchanged). The plan is saved to `docs/superpowers/plans/...` per that skill. Record the canonical plan path and copy a council-local reference into `<run-dir>/plan/<Gn>.md` (a stub: `Plan: <canonical-path>` plus the acceptance criterion). The Organizer should NOT hold the full plan markdown in working memory after this step — only the path.
    - RESEARCH → see `modes/research.md` Plan section. Write the research outline directly to `<run-dir>/plan/<Gn>.md`. The Organizer is the author here, so the outline is unavoidably in context briefly; drop references to it after the critique pass converges.
    - MIXED → see `modes/mixed.md`. Produces both a research plan and a code plan, both written under `<run-dir>/plan/<Gn>/`.
 

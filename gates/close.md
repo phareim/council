@@ -14,7 +14,7 @@ Follows the [Subagent return shape](../SKILL.md#subagent-return-shape-disk-first
 
 **Before verification**, read the most recent `decisions.md` entry for `<Gn>` (typically the Plan gate's). Beautiful Person should know what trade-offs were already made before suggesting revisions. Do not re-read the full plan or frame role files — the synthesis lines are enough.
 
-1. **Invoke `superpowers:verification-before-completion`** via the `Skill` tool to verify any concrete claims before closing (e.g. "tests pass", "the wiki entry is reachable"). If that skill returns verbose output in-band, the Organizer keeps only the pass/fail summary and (on failure) the first failing command + output — full transcript goes to `<run-dir>/close/<Gn>-verification.md` and is dropped from working memory.
+1. **Invoke `superpowers:verification-before-completion`** via the `Skill` tool (absent? → use its fallback from the composition table in `SKILL.md`: verify inline, keep only pass/fail in context) to verify any concrete claims before closing (e.g. "tests pass", "the wiki entry is reachable"). If that skill returns verbose output in-band, the Organizer keeps only the pass/fail summary and (on failure) the first failing command + output — full transcript goes to `<run-dir>/close/<Gn>-verification.md` and is dropped from working memory.
 
 2. **Stage the inputs BP needs on disk** so BP can read from disk rather than have them passed inline:
    - CODE: `git diff <merge-base>..HEAD > <run-dir>/close/<Gn>-diff.patch` (cumulative diff for the goal). Draft an initial commit message at `<run-dir>/close/<Gn>-commit-msg.txt` (one-line subject + short body — the Organizer's first pass).

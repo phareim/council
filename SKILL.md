@@ -163,10 +163,10 @@ Five rules make a council Workflow safe — the first two are load-bearing:
 ## Model, tools & plan mode
 
 **Model & effort.** Dispatch most roles at the inherited default. Override only where it pays, by *capability tier*, and use aliases — never pinned model ids, which rot across model generations:
-- Cheapest tier that can stitch/search text → Librarian recall (also `agentType: Explore`), RESEARCH Assembler.
+- Cheapest tier ONLY for dispatches whose return shape doesn't matter. **Not** the Librarian or the RESEARCH Assembler: their bounded returns ARE the product, and cheap-tier agents leak OUTPUT DISCIPLINE (2026-06-10 lesson — the haiku Librarian echoed its full findings inline twice, tripling its context cost). Run any dispatch with a return-shape contract at the mid tier or above; `agentType: Explore` remains fine for the Librarian's search itself.
 - Strongest available tier / higher effort → synthesis-heavy roles: Critic, Beautiful Person, MIXED reconciliation.
 
-(As of 2026-05 the tiers are `haiku` < `sonnet` < `opus`; effort runs `low`→`max`, default `high`. Update this one line as models change.)
+(As of 2026-07 the tiers are `haiku` < `sonnet` < `opus` < `fable` (Claude 5 / Mythos class); effort runs `low`→`max`, default `high`. Update this one line as models change.)
 
 **Deferred tools.** Subagents (and Workflow agents) needing MCP or deferred tools — `sleeper-tasks`, `sfl`, the wiki MCP, `TaskCreate` — must `ToolSearch select:<name>` to load the schema before the first call. Don't assume a deferred tool is callable by name alone.
 
@@ -176,18 +176,20 @@ Five rules make a council Workflow safe — the first two are load-bearing:
 
 When invoking another skill, use the `Skill` tool with the exact name. Do not re-implement.
 
-| Phase | Skill |
-|---|---|
-| Plan (CODE) | `superpowers:writing-plans` |
-| Execute (CODE) | `superpowers:subagent-driven-development` |
-| Per-task TDD | `superpowers:test-driven-development` (inside subagent-driven-development) |
-| Per-task review | internal to `superpowers:subagent-driven-development` (spec + quality, per task) |
-| Phase review (CODE, once per goal) | `gates/review.md` — Critic assumption review on the cumulative diff |
-| Debugging an in-flight failure | `superpowers:systematic-debugging` |
-| Execute-phase fan-out (≥3 units) | `Workflow` tool — see [Fan-out execution](#fan-out-execution-the-workflow-tool) |
-| Interruptible fan-out (exception) | `superpowers:dispatching-parallel-agents` |
-| Web-heavy RESEARCH execute | `deep-research` skill (optional wholesale delegate — see `modes/research.md`) |
-| Verify before close | `superpowers:verification-before-completion` |
+**Availability check — do this ONCE at Intake.** The `superpowers` plugin may be absent or disabled on the host (it was disabled on Sleeper when the 2026-07-13 run discovered it mid-gate). At Intake, check the session's available-skills listing for `superpowers:*` entries; if none are listed, note `superpowers: absent — using fallbacks` in the Decision Log and use the Fallback column below for the whole run. Do not rediscover this per gate, and do not try to enable the plugin — that is a host-level settings change the council doesn't own. The fallbacks are proven: the 2026-07-13 taste-maker run shipped a full webapp on them.
+
+| Phase | Skill | Fallback when superpowers is absent |
+|---|---|---|
+| Plan (CODE) | `superpowers:writing-plans` | One strongest-tier planner agent writes the plan to `<repo>/docs/plans/<date>-<slug>.md` (bite-sized tasks, exact file paths, verification per task); same disk-first stub rule in `gates/plan.md` |
+| Execute (CODE) | `superpowers:subagent-driven-development` | `Workflow`-based build: sequential stages commit their own work; parallel agents write disjoint files and REPORT (not write) shared-file changes; one integrator stage serializes builds (2026-07-13 lesson — zero git races across 8 agents) |
+| Per-task TDD | `superpowers:test-driven-development` (inside subagent-driven-development) | Put "write the failing test first, then make it pass" in each implementer dispatch prompt |
+| Per-task review | internal to `superpowers:subagent-driven-development` (spec + quality, per task) | Fold one combined spec+quality check into each Workflow stage's return contract |
+| Phase review (CODE, once per goal) | `gates/review.md` — Critic assumption review on the cumulative diff | (council-defined — unchanged) |
+| Debugging an in-flight failure | `superpowers:systematic-debugging` | Organizer-led single structured pass: reproduce → read the actual error → isolate the smallest failing case → one hypothesis at a time; no blind retries |
+| Execute-phase fan-out (≥3 units) | `Workflow` tool — see [Fan-out execution](#fan-out-execution-the-workflow-tool) | (native tool — unchanged) |
+| Interruptible fan-out (exception) | `superpowers:dispatching-parallel-agents` | Plain parallel `Agent` dispatches, each with a disk-first OUTPUT DISCIPLINE block |
+| Web-heavy RESEARCH execute | `deep-research` skill (optional wholesale delegate — see `modes/research.md`) | (not a superpowers skill — unchanged) |
+| Verify before close | `superpowers:verification-before-completion` | Organizer verifies inline: run the claimed commands (tests, curl the deployed URL, check the artifact exists), keep only pass/fail + first failure in context, full transcript to `<run-dir>/close/<Gn>-verification.md` |
 
 ## Important context
 

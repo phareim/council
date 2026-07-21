@@ -2,6 +2,8 @@
 
 Used when the goal changes code in a repo and produces no separate knowledge artifact.
 
+**If Intake found `superpowers:*` absent**, every `superpowers:` invocation below has a defined replacement — use the Fallback column of the composition table in `SKILL.md`; do not improvise a new one mid-gate.
+
 ## Plan step
 
 Invoke `superpowers:writing-plans` via the `Skill` tool. The implementation plan is saved to that skill's standard location (`docs/superpowers/plans/...`). Record a council-local stub at `<run-dir>/plan/<Gn>.md` — `Plan: <canonical-path>` plus the acceptance criterion — per the Plan gate. Do not copy the plan body; the path is the reference.
