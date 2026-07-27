@@ -15,10 +15,11 @@ The skill loads automatically on the next Claude Code session start.
 
 ## Where to read
 
-- **`SKILL.md`** — entry point: lifecycle, the per-goal loop, mid-run interrupt channel, iteration limits, the disk-first subagent-return-shape convention, Workflow fan-out, model/tool/plan-mode rules, composition with `superpowers:` skills.
+- **`SKILL.md`** — entry point: lifecycle, the per-goal loop, mid-run interrupt channel, iteration limits, the disk-first subagent-return-shape convention, Workflow fan-out, model/tool/plan-mode rules, the council-owned procedure table.
 - **`personalities/`** — one file per role (Librarian, Starter, Critic, Organizer, Beautiful Person).
 - **`gates/`** — Frame, Plan, Review, Close procedures.
 - **`modes/`** — CODE, RESEARCH, MIXED Execute pipelines.
+- **`procedures/`** — council-owned working procedures (currently: `writing-plans.md`, the CODE plan format + planner dispatch).
 - **`templates/`** — Goal Register, Decision Log entry, live Status heartbeat, final Report.
 - **`scripts/learn.mjs` + `learning.md`** — the meta-learning loop: SQLite memory of past runs (two mandatory writes, one mandatory read; `run-end` refuses to finalize without a self-review).
 - **`IMPROVEMENTS.md`** — record of the process-improvement plan (P1–P6, all items shipped).

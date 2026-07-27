@@ -7,9 +7,9 @@ Used when the goal has both code-shipping and knowledge-artifact dimensions.
 1. Decompose the goal into a research plan and a code plan. The Organizer decides whether they are dependent (research must finish first to inform code) or independent (can run in parallel).
 2. Write both plans under `<run-dir>/plan/<Gn>/`:
    - `<run-dir>/plan/<Gn>/research.md` — using the RESEARCH-mode outline shape
-   - `<run-dir>/plan/<Gn>/code.md` — produced by `superpowers:writing-plans`
+   - `<run-dir>/plan/<Gn>/code.md` — produced via the council plan procedure (`procedures/writing-plans.md`)
 3. Run the Plan gate's critique pass on each plan.
-4. Run a BP plan pass on the research outline only (see `modes/research.md` → BP plan pass). The code plan is exempt — `superpowers:writing-plans` already constrains its shape; BP is not a code reviewer.
+4. Run a BP plan pass on the research outline only (see `modes/research.md` → BP plan pass). The code plan is exempt — the plan procedure's format rules already constrain its shape; BP is not a code reviewer.
 
 ## Execute step
 
@@ -21,7 +21,7 @@ Two paths:
 3. Run the CODE-mode Execute step (`modes/code.md`).
 
 **Independent (parallel):**
-1. Run the two tracks concurrently — as a `Workflow` `parallel()` stage ([Fan-out execution](../SKILL.md#fan-out-execution-the-workflow-tool)), or via `superpowers:dispatching-parallel-agents` if the fan-out must stay interruptible mid-run:
+1. Run the two tracks concurrently — as a `Workflow` `parallel()` stage ([Fan-out execution](../SKILL.md#fan-out-execution-the-workflow-tool)), or via plain parallel `Agent` dispatches in the main loop if the fan-out must stay interruptible mid-run:
    - Research track: runs the RESEARCH-mode Execute step
    - Code track: runs the CODE-mode Execute step
 2. Wait for both to complete (or one to fail; in which case the other still runs to completion before Close). Both tracks' artifacts land in the run dir as usual; a Workflow returns only a thin manifest.

@@ -1,12 +1,12 @@
 # Review gate (per Execute phase)
 
-Used during CODE-mode execution **once per goal**, after `superpowers:subagent-driven-development` completes all tasks in the plan and before the Close gate.
+Used during CODE-mode execution **once per goal**, after the execute pipeline (`modes/code.md`) completes all tasks in the plan and before the Close gate.
 
 Follows the [Subagent return shape](../SKILL.md#subagent-return-shape-disk-first-convention) rule.
 
 ## Why per-phase, not per-task
 
-`superpowers:subagent-driven-development` already runs a two-stage review per task (spec compliance, then code quality) plus a final whole-implementation review. A council layer on top of that per task was protocol nobody executed: both audited CODE runs (2026-05-27) show empty `work/` dirs and good outcomes, with the high-value catches happening at the *plan* gate instead. What SDD does **not** do is assumption review — are the premises behind the shipped approach still right, did execution invalidate the plan, is the acceptance criterion actually met? That is the council Critic's job, and it needs the cumulative diff, not task-sized fragments.
+The execute pipeline already carries a per-task spec+quality check in every implementer's return contract, plus the Organizer's evidence-based verification of each stage. A council review layer on top of that per task was protocol nobody executed: both audited CODE runs (2026-05-27) show empty `work/` dirs and good outcomes, with the high-value catches happening at the *plan* gate instead. What the per-task checks do **not** do is assumption review — are the premises behind the shipped approach still right, did execution invalidate the plan, is the acceptance criterion actually met? That is the council Critic's job, and it needs the cumulative diff, not task-sized fragments.
 
 ## Inputs
 - Goal text + acceptance criterion (from `register.md`)

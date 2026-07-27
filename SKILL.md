@@ -1,6 +1,6 @@
 ---
 name: council-of-experts
-description: Use when invoking /council with one or more goals — orchestrates a long-running, autonomous Claude Code session that runs goals to completion using the Librarian / Starter / Critic / Organizer / Beautiful-Person personality framework on top of superpowers. The session does NOT pause for user input once goals are accepted; it runs until every goal is done or filed as blocked.
+description: Use when invoking /council with one or more goals — orchestrates a long-running, autonomous Claude Code session that runs goals to completion using the Librarian / Starter / Critic / Organizer / Beautiful-Person personality framework, with council-owned procedures for planning, execution, review, and verification. The session does NOT pause for user input once goals are accepted; it runs until every goal is done or filed as blocked.
 ---
 
 # Council of Experts
@@ -170,13 +170,13 @@ If a subagent returns a wall of prose anyway, the Organizer should treat that as
 
 **Parking lot — catching information underway.** Any subagent (and the Organizer) may append one-line out-of-scope observations — a bug spotted in adjacent code, a stale doc, an idea worth filing — to `<run-dir>/parking-lot.md`. Dispatch prompts SHOULD end their OUTPUT DISCIPLINE block with the standing line: `Out-of-scope observations: append one line each to <run-dir>/parking-lot.md — do not put them in your return.` At Report time the Organizer reads the file once, files items worth keeping (`sleeper-tasks` if substantive, `sfl meta add` if idea-shaped), and lists them under the Report's Parking lot section. No schema, no gate — it is an append-only scratch channel so mid-run gold stops evaporating.
 
-The same rule applies to Skill-tool invocations whose output the Organizer doesn't need to act on directly: prefer skills that write to disk (e.g. `superpowers:writing-plans` saves to `docs/superpowers/plans/...`) and record only the path + acceptance criteria in the Decision Log.
+The same rule applies to procedures and Skill-tool invocations whose output the Organizer doesn't need to act on directly: prefer flows that write to disk (e.g. the plan procedure saves to `<repo>/docs/plans/...`) and record only the path + acceptance criteria in the Decision Log.
 
 ### Fan-out execution: the Workflow tool
 
 The `Workflow` tool is the **native** form of the rule above: `agent()` results live in script variables and never reach the Organizer's context. It is the same principle — *heavy output never transits the Organizer* — enforced by the runtime instead of by prompt discipline.
 
-**When to use it:** if an Execute phase fans out into **≥3 independent units that each produce heavy output** (RESEARCH sections, MIXED parallel tracks), run that fan-out as a `Workflow`. Otherwise dispatch inline. Frame, Plan, and Close always stay in the main session — they are ~2-unit synthesis gates that need the Organizer in the loop. This **replaces** `superpowers:dispatching-parallel-agents` for council Execute-phase fan-out; reach back for that skill only in the one case below where mid-run interruptibility matters more than context savings.
+**When to use it:** if an Execute phase fans out into **≥3 independent units that each produce heavy output** (RESEARCH sections, MIXED parallel tracks), run that fan-out as a `Workflow`. Otherwise dispatch inline. Frame, Plan, and Close always stay in the main session — they are ~2-unit synthesis gates that need the Organizer in the loop. The one exception is noted below: when mid-run interruptibility matters more than context savings, use plain parallel `Agent` dispatches in the main loop instead (each with a disk-first OUTPUT DISCIPLINE block).
 
 Five rules make a council Workflow safe — the first two are load-bearing:
 
@@ -184,7 +184,7 @@ Five rules make a council Workflow safe — the first two are load-bearing:
 2. **Final artifacts still go to disk.** Skip the disk write only for hand-offs *between agents in the same script* (an in-script Assembler reads sections from vars). The phase's final outputs — `draft.md`, `critic-pass.md`, each section — MUST still be written to the run dir. The Organizer's drill-in synthesis runs *after* the script exits, when vars are gone, and reaches only disk; the run dir stays the source of truth and the audit trail.
 3. **Schema, not prose.** Encode each contract as a JSON `schema` on `agent()` (validated, auto-retried). The prose OUTPUT DISCIPLINE blocks remain the contract for plain main-loop `Agent` dispatch, which has no schema enforcement.
 4. **Re-dispatch inside a Workflow is cold.** `SendMessage` (continue an agent with its context intact) is a main-loop tool — not callable from a Workflow script. The one allowed re-dispatch inside a Workflow is a fresh `agent()` call; pass the prior attempt's disk path in its prompt to carry context.
-5. **Visibility + the interrupt blind window.** Background Workflows emit progress to `/workflows`, not the transcript, and cannot be interrupted mid-run. So `log()` one line before launch (`"delegated <phase> for <Gn> → workflow <id>; watch /workflows"`) and a one-line digest after it returns, keeping phase boundaries visible — and record the workflow's runId + persisted script path in the gate's Decision Log entry (same-session resume depends on them). INTERRUPT.md is honored at the gate *before* the Workflow launches and the gate *after* it returns — but a nudge written *during* a long fan-out waits until the phase finishes. If a goal needs finer interrupt granularity, keep that fan-out as `superpowers:dispatching-parallel-agents` in the main loop instead.
+5. **Visibility + the interrupt blind window.** Background Workflows emit progress to `/workflows`, not the transcript, and cannot be interrupted mid-run. So `log()` one line before launch (`"delegated <phase> for <Gn> → workflow <id>; watch /workflows"`) and a one-line digest after it returns, keeping phase boundaries visible — and record the workflow's runId + persisted script path in the gate's Decision Log entry (same-session resume depends on them). INTERRUPT.md is honored at the gate *before* the Workflow launches and the gate *after* it returns — but a nudge written *during* a long fan-out waits until the phase finishes. If a goal needs finer interrupt granularity, keep that fan-out as plain parallel `Agent` dispatches in the main loop instead.
 
 **Resume (single-run scope only).** A killed fan-out resumes via `Workflow({scriptPath, resumeFromRunId})` — completed `agent()` calls replay from cache. This recovers an in-flight *phase*, not the whole session: `register.md` and `decisions.md` on disk rebuild the Organizer's state on re-read, but in-flight gate context does not survive, so a resumed run re-enters at the last completed gate.
 
@@ -198,26 +198,24 @@ Five rules make a council Workflow safe — the first two are load-bearing:
 
 **Deferred tools.** Subagents (and Workflow agents) needing MCP or deferred tools — `sleeper-tasks`, `sfl`, the wiki MCP, `TaskCreate` — must `ToolSearch select:<name>` to load the schema before the first call. Don't assume a deferred tool is callable by name alone.
 
-**Never enter plan mode.** The council is an autonomous executor. `EnterPlanMode` halts all edits and `ExitPlanMode` forces a user approval — breaking both the no-pausing rule and the run. `superpowers:writing-plans` produces plan files without touching plan mode.
+**Never enter plan mode.** The council is an autonomous executor. `EnterPlanMode` halts all edits and `ExitPlanMode` forces a user approval — breaking both the no-pausing rule and the run. The plan procedure (`procedures/writing-plans.md`) produces plan files without touching plan mode.
 
-## Composition with superpowers
+## Council-owned procedures
 
-When invoking another skill, use the `Skill` tool with the exact name. Do not re-implement.
+The council owns its full procedure stack — nothing here depends on any plugin. (History: these began as fallbacks to the `superpowers` plugin; the fallbacks shipped the 2026-07-13 taste-maker run while the plugin was disabled, so on 2026-07-27 they were promoted to canonical and the durable superpowers techniques were folded in. If a session lists `superpowers:*` skills anyway, ignore them — these files govern.)
 
-**Availability check — do this ONCE at Intake.** The `superpowers` plugin may be absent or disabled on the host (it was disabled on Sleeper when the 2026-07-13 run discovered it mid-gate). At Intake, check the session's available-skills listing for `superpowers:*` entries; if none are listed, note `superpowers: absent — using fallbacks` in the Decision Log and use the Fallback column below for the whole run. Do not rediscover this per gate, and do not try to enable the plugin — that is a host-level settings change the council doesn't own. The fallbacks are proven: the 2026-07-13 taste-maker run shipped a full webapp on them.
+| Phase | Procedure |
+|---|---|
+| Plan (CODE) | `procedures/writing-plans.md` — one strongest-tier planner agent, plan format + self-review rules, saved to `<repo>/docs/plans/<date>-<slug>.md`; disk-first stub rule in `gates/plan.md` |
+| Execute (CODE) | `modes/code.md` — `Workflow`-based build: disjoint-file parallel agents + one integrator stage, TDD line in every implementer prompt, spec+quality self-check in every return contract, evidence-based verification of implementer claims |
+| Debugging an in-flight failure | `modes/code.md` "Debugging an in-flight failure" — one structured pass (read the error, reproduce, instrument component boundaries, one hypothesis at a time) + the three-failed-fixes architecture breaker |
+| Phase review (CODE, once per goal) | `gates/review.md` — Critic assumption review on the cumulative diff |
+| Execute-phase fan-out (≥3 units) | `Workflow` tool — see [Fan-out execution](#fan-out-execution-the-workflow-tool) |
+| Interruptible fan-out (exception) | Plain parallel `Agent` dispatches in the main loop, each with a disk-first OUTPUT DISCIPLINE block |
+| Web-heavy RESEARCH execute | `deep-research` skill (optional wholesale delegate — see `modes/research.md`) |
+| Verify before close | `gates/close.md` step 1 — evidence before claims: run the verifying commands fresh, never trust a subagent's success report, keep only pass/fail in context |
 
-| Phase | Skill | Fallback when superpowers is absent |
-|---|---|---|
-| Plan (CODE) | `superpowers:writing-plans` | One strongest-tier planner agent writes the plan to `<repo>/docs/plans/<date>-<slug>.md` (bite-sized tasks, exact file paths, verification per task); same disk-first stub rule in `gates/plan.md` |
-| Execute (CODE) | `superpowers:subagent-driven-development` | `Workflow`-based build: sequential stages commit their own work; parallel agents write disjoint files and REPORT (not write) shared-file changes; one integrator stage serializes builds (2026-07-13 lesson — zero git races across 8 agents) |
-| Per-task TDD | `superpowers:test-driven-development` (inside subagent-driven-development) | Put "write the failing test first, then make it pass" in each implementer dispatch prompt |
-| Per-task review | internal to `superpowers:subagent-driven-development` (spec + quality, per task) | Fold one combined spec+quality check into each Workflow stage's return contract |
-| Phase review (CODE, once per goal) | `gates/review.md` — Critic assumption review on the cumulative diff | (council-defined — unchanged) |
-| Debugging an in-flight failure | `superpowers:systematic-debugging` | Organizer-led single structured pass: reproduce → read the actual error → isolate the smallest failing case → one hypothesis at a time; no blind retries |
-| Execute-phase fan-out (≥3 units) | `Workflow` tool — see [Fan-out execution](#fan-out-execution-the-workflow-tool) | (native tool — unchanged) |
-| Interruptible fan-out (exception) | `superpowers:dispatching-parallel-agents` | Plain parallel `Agent` dispatches, each with a disk-first OUTPUT DISCIPLINE block |
-| Web-heavy RESEARCH execute | `deep-research` skill (optional wholesale delegate — see `modes/research.md`) | (not a superpowers skill — unchanged) |
-| Verify before close | `superpowers:verification-before-completion` | Organizer verifies inline: run the claimed commands (tests, curl the deployed URL, check the artifact exists), keep only pass/fail + first failure in context, full transcript to `<run-dir>/close/<Gn>-verification.md` |
+When a procedure exists for the phase you're in, follow it — do not improvise a new one mid-gate.
 
 ## Important context
 
