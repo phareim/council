@@ -20,7 +20,7 @@ Answer all four in `<run-dir>/self-review.md`, 2–5 sentences each, then distil
 1. **What dragged, got skipped, or got worked around this run?** Where did the written protocol and what actually happened diverge?
 2. **Returns discipline:** where did a subagent return leak (wall of prose) or a structured return prove too thin (you had to read the per-role file anyway)?
 3. **Cost vs. catch:** did each extra pass (BP plan pass, phase review, critique re-dispatch) earn its cost this run? Name one that did and one that didn't.
-4. **Next time:** what should the next run do differently — and is that a *skill edit* (file it: `sfl meta add` on the council repo, or edit now if trivial) or just *discipline* (make it a lesson)?
+4. **Next time:** what should the next run do differently — and is that a *skill edit* (file it: a draft task with `--repo phareim/council`, or edit now if trivial) or just *discipline* (make it a lesson)?
 
 A lesson is a one-liner a future Organizer can act on at Intake, e.g. `"RESEARCH goals with <3 sections: skip the Workflow, dispatch inline — setup overhead dominated"` — not a diary entry.
 

@@ -138,7 +138,7 @@ This works because every gate is re-entrant by construction: a gate's completion
 
 ## Iteration limits
 
-Council-wide rule: at most **one re-dispatch of subagents per phase**. If the re-dispatch doesn't converge, ship what's there and file a follow-up via `sleeper-tasks` or `sfl meta add`. Don't loop indefinitely — diminishing returns set in fast and the user is paying for tokens.
+Council-wide rule: at most **one re-dispatch of subagents per phase**. If the re-dispatch doesn't converge, ship what's there and file a follow-up via `sleeper-tasks` (draft + `--repo` for ideas). Don't loop indefinitely — diminishing returns set in fast and the user is paying for tokens.
 
 **Exception:** trivial in-place fixups during the Review gate (typo-class corrections, single-line tweaks the Organizer can make directly without re-dispatching the implementer) are unlimited. The cap applies only to *re-dispatching the implementer*.
 
@@ -168,7 +168,7 @@ Every subagent dispatch in this skill MUST follow this shape:
 
 If a subagent returns a wall of prose anyway, the Organizer should treat that as the gate's problem (the dispatch prompt was too loose) and tighten it next time — not paste the wall into the gate artifact.
 
-**Parking lot — catching information underway.** Any subagent (and the Organizer) may append one-line out-of-scope observations — a bug spotted in adjacent code, a stale doc, an idea worth filing — to `<run-dir>/parking-lot.md`. Dispatch prompts SHOULD end their OUTPUT DISCIPLINE block with the standing line: `Out-of-scope observations: append one line each to <run-dir>/parking-lot.md — do not put them in your return.` At Report time the Organizer reads the file once, files items worth keeping (`sleeper-tasks` if substantive, `sfl meta add` if idea-shaped), and lists them under the Report's Parking lot section. No schema, no gate — it is an append-only scratch channel so mid-run gold stops evaporating.
+**Parking lot — catching information underway.** Any subagent (and the Organizer) may append one-line out-of-scope observations — a bug spotted in adjacent code, a stale doc, an idea worth filing — to `<run-dir>/parking-lot.md`. Dispatch prompts SHOULD end their OUTPUT DISCIPLINE block with the standing line: `Out-of-scope observations: append one line each to <run-dir>/parking-lot.md — do not put them in your return.` At Report time the Organizer reads the file once, files items worth keeping as `sleeper-tasks` (todo + Sleeper if substantive, draft + `--repo` if idea-shaped), and lists them under the Report's Parking lot section. No schema, no gate — it is an append-only scratch channel so mid-run gold stops evaporating.
 
 The same rule applies to procedures and Skill-tool invocations whose output the Organizer doesn't need to act on directly: prefer flows that write to disk (e.g. the plan procedure saves to `<repo>/docs/plans/...`) and record only the path + acceptance criteria in the Decision Log.
 

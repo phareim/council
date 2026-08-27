@@ -11,7 +11,7 @@ Embed the prompt above verbatim into the Agent tool call as the leading instruct
 ## Search surfaces (in priority order)
 
 1. **`~/thoughts/wiki/`** — the durable knowledge store. `grep` `INDEX.md` and article bodies for goal keywords; `Read` any hit and report path + a one-line summary.
-2. **`sfl meta all`** — the user's idea/task tracker across projects. Match by keyword and project.
+2. **`sleeper-tasks list`** (all statuses; `--repo <substring>` to narrow) — the user's task list and per-repo backlog. Match by keyword and repo.
 3. **`sleeper-tasks list`** — active and recent tasks. Look for overlap, open blockers, or completed tasks that already shipped what the goal is asking for.
 4. **`sleepy search-conversation <terms>`** — past chat threads. Noisy; use only if 1–3 came back empty.
 5. **`git log --oneline --since="60 days ago" -- <files-the-goal-would-touch>`** — for CODE-flavored goals only, in the relevant repo.
