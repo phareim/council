@@ -2,10 +2,7 @@
 
 Used when the goal changes code in a repo and produces no separate knowledge artifact.
 
-All procedures here are council-owned (since 2026-07-27; distilled from the superpowers
-fallbacks that shipped the 2026-07-13 taste-maker run, plus techniques worth keeping from
-superpowers 6.2.0). Do not invoke `superpowers:*` skills even if a session lists them —
-these files are canonical.
+All procedures here are council-owned; these files are canonical.
 
 ## Plan step
 
@@ -30,10 +27,8 @@ Record the starting SHA first (the Review gate's diff anchor):
 - **Every implementer prompt carries the TDD line:** "Write the failing test first, run
   it and confirm it fails for the right reason, then make it pass with minimal code.
   Commit test + implementation together."
-- **Every implementer's return contract folds in one combined spec+quality self-check:**
-  does the diff meet the task's requirements exactly (nothing missing, nothing extra),
-  and would a fresh reviewer approve it? Schema-enforce the return (status, commits,
-  one-line test summary, concerns).
+- **Schema-enforce every implementer's return:** status, commits, one-line test summary,
+  concerns.
 - No pauses between tasks — continuous execution per the council's no-pausing rule. Stop
   only for a blocker or genuine ambiguity.
 

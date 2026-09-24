@@ -194,7 +194,7 @@ Five rules make a council Workflow safe — the first two are load-bearing:
 - Cheapest tier ONLY for dispatches whose return shape doesn't matter. **Not** the Librarian or the RESEARCH Assembler: their bounded returns ARE the product, and cheap-tier agents leak OUTPUT DISCIPLINE (2026-06-10 lesson — the haiku Librarian echoed its full findings inline twice, tripling its context cost). Run any dispatch with a return-shape contract at the mid tier or above; `agentType: Explore` remains fine for the Librarian's search itself.
 - Strongest available tier / higher effort → synthesis-heavy roles: Critic, Beautiful Person, MIXED reconciliation.
 
-(As of 2026-07 the tiers are `haiku` < `sonnet` < `opus` < `fable` (Claude 5 / Mythos class); effort runs `low`→`max`, default `high`. Update this one line as models change.)
+(Verified 2026-09-24: the Agent tool accepts the aliases `haiku`, `sonnet`, `opus`, `fable`. Effort runs `low`→`max`; on Claude Opus 5.5 the API default is `medium`. Update this one line as models change.)
 
 **Deferred tools.** Subagents (and Workflow agents) needing MCP or deferred tools — `sleeper-tasks`, `sfl`, the wiki MCP, `TaskCreate` — must `ToolSearch select:<name>` to load the schema before the first call. Don't assume a deferred tool is callable by name alone.
 
@@ -202,17 +202,16 @@ Five rules make a council Workflow safe — the first two are load-bearing:
 
 ## Council-owned procedures
 
-The council owns its full procedure stack — nothing here depends on any plugin. (History: these began as fallbacks to the `superpowers` plugin; the fallbacks shipped the 2026-07-13 taste-maker run while the plugin was disabled, so on 2026-07-27 they were promoted to canonical and the durable superpowers techniques were folded in. If a session lists `superpowers:*` skills anyway, ignore them — these files govern.)
+The council owns its full procedure stack — nothing here depends on any plugin.
 
 | Phase | Procedure |
 |---|---|
 | Plan (CODE) | `procedures/writing-plans.md` — one strongest-tier planner agent, plan format + self-review rules, saved to `<repo>/docs/plans/<date>-<slug>.md`; disk-first stub rule in `gates/plan.md` |
-| Execute (CODE) | `modes/code.md` — `Workflow`-based build: disjoint-file parallel agents + one integrator stage, TDD line in every implementer prompt, spec+quality self-check in every return contract, evidence-based verification of implementer claims |
+| Execute (CODE) | `modes/code.md` — `Workflow`-based build: disjoint-file parallel agents + one integrator stage, TDD line in every implementer prompt, schema-enforced returns, evidence-based verification of implementer claims |
 | Debugging an in-flight failure | `modes/code.md` "Debugging an in-flight failure" — one structured pass (read the error, reproduce, instrument component boundaries, one hypothesis at a time) + the three-failed-fixes architecture breaker |
 | Phase review (CODE, once per goal) | `gates/review.md` — Critic assumption review on the cumulative diff |
 | Execute-phase fan-out (≥3 units) | `Workflow` tool — see [Fan-out execution](#fan-out-execution-the-workflow-tool) |
 | Interruptible fan-out (exception) | Plain parallel `Agent` dispatches in the main loop, each with a disk-first OUTPUT DISCIPLINE block |
-| Web-heavy RESEARCH execute | `deep-research` skill (optional wholesale delegate — see `modes/research.md`) |
 | Verify before close | `gates/close.md` step 1 — evidence before claims: run the verifying commands fresh, never trust a subagent's success report, keep only pass/fail in context |
 
 When a procedure exists for the phase you're in, follow it — do not improvise a new one mid-gate.

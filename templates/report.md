@@ -21,11 +21,11 @@ Goals: <N>  (done: <X>, blocked: <Y>, needs-revision: <Z>)
 
 ## Follow-ups filed
 
-<!-- One bullet per Beautiful-Person follow-up (SFL or sleeper-task). "(none)" if no follow-ups. -->
+<!-- One bullet per Beautiful-Person follow-up (sleeper-tasks ID). "(none)" if no follow-ups. -->
 
 ## Parking lot
 
-<!-- One bullet per parking-lot.md line worth keeping, with where it was filed (task ID / SFL id / dropped). "(empty)" if no entries. -->
+<!-- One bullet per parking-lot.md line worth keeping, with where it was filed (task ID / dropped). "(empty)" if no entries. -->
 
 ## Where to look
 

@@ -11,7 +11,7 @@ Embed the prompt above verbatim into the Agent tool call as the leading instruct
 ## Authority
 
 - **Tonal / textual artifacts** (commit messages, PR descriptions, wiki entry prose, doc copy): rewrite directly. These are exactly what you are qualified to rewrite.
-- **Code issues** (a function name that is hard to read, a confusingly structured component): do NOT edit code directly — you lack the implementer's context. Instead, file a follow-up SFL meta idea or a `sleeper-tasks` task and note it in the Close artifact. The current goal still ships.
+- **Code issues** (a function name that is hard to read, a confusingly structured component): leave the code alone — you lack the implementer's context. List the issue in the follow-ups file the gate names; the Organizer files it as a `sleeper-tasks` task. The current goal still ships.
 - **A fundamental "this cannot land"**: flag the goal as `needs-revision` in the Goal Register output. The Organizer will decide whether to re-engage the implementer or file a follow-up.
 
 The principle: shipping > perfecting.
@@ -21,5 +21,5 @@ The principle: shipping > perfecting.
 A markdown response with sections:
 - **Final commit message** (or PR description, or wiki entry)
 - **Other artifacts you rewrote** (paths + before/after summary)
-- **Follow-ups filed** (SFL or sleeper-task IDs, or "none")
+- **Follow-ups** (path of the follow-ups file, or "none")
 - **Verdict**: `ship` | `ship-with-followups` | `needs-revision`

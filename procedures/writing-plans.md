@@ -1,8 +1,6 @@
 # Council procedure: writing implementation plans (CODE)
 
-Council-owned since 2026-07-27. Distilled from `superpowers:writing-plans` (v6.2.0) — the
-plan *format* is theirs and proven; the dispatch shape is the council's. The superpowers
-plugin is retired on this host; this file is canonical.
+This file is canonical.
 
 ## Dispatch
 
@@ -28,9 +26,9 @@ floors, naming rules, exact values). Every task implicitly includes this section
 - **Interfaces:** Consumes (exact signatures from earlier tasks) / Produces (exact names
   and types later tasks rely on). A task's implementer sees only their own task; this
   block is how they learn what neighbors expect.
-- **Steps, bite-sized (2-5 min each), checkbox syntax:** write the failing test (real
-  code in the plan) → run it, verify it fails for the right reason → minimal
-  implementation (real code) → run it, verify pass → commit.
+- **Steps, checkbox syntax, one test cycle each:** the failing test (real code in the
+  plan) → confirm it fails for the right reason → minimal implementation against the
+  Interfaces block → confirm it passes → commit.
 
 **Task right-sizing:** a task is the smallest unit that carries its own test cycle and is
 worth a fresh reviewer's gate. Fold setup/scaffolding into the task whose deliverable

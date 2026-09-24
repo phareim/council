@@ -94,7 +94,7 @@ Follows the [Subagent return shape](../SKILL.md#subagent-return-shape-disk-first
    - Followups file:      ./<Gn>-followups.md (or "none")
    - Commit hash:         <hash> (if CODE/MIXED)
    - Wiki path:           ~/thoughts/wiki/<slug>.md (if RESEARCH/MIXED)
-   - SFL idea ID:         <id> (if RESEARCH/MIXED)
+   - Draft task ID:       <id> (if RESEARCH/MIXED)
    - Followup task IDs:   <list>
    ```
 

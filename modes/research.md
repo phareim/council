@@ -57,8 +57,6 @@ After the critique pass converges, run a 30-second Beautiful Person pass on the 
 
 ## Execute step
 
-**Web-heavy goals:** if the goal is predominantly external web research (most sources are URLs, little internal synthesis), consider delegating the whole Execute step to the `deep-research` skill instead of this pipeline — it ships its own fan-out → verify → synthesize loop. Keep the council's Plan and Close gates around it; its output lands in `<run-dir>/work/<Gn>/draft.md` like any other draft.
-
 **For ≥3 sections, run the whole fan-out as a `Workflow`** (section drafting → an in-script Assembler → the Critic-on-draft) — see [Fan-out execution](../SKILL.md#fan-out-execution-the-workflow-tool). The script holds section bodies in vars, still writes each section + `draft.md` + `critic-pass.md` to the run dir, and returns ONLY a thin manifest (paths + word/source counts + critic verdict + ≤5 fixes). Give each `agent()` a JSON `schema` matching the return shapes below; a re-dispatch inside the Workflow is a cold `agent()` call carrying the prior section's path (no `SendMessage`). `log()` a line before launch and a digest after. Keep the section/Assembler fan-out as main-loop plain parallel `Agent` dispatches instead only when you need it interruptible mid-run (a Workflow can't be).
 
 For <3 sections, or in the interruptible case, dispatch in the main loop sequentially or in pairs. Either way, each research subagent gets:
@@ -142,4 +140,4 @@ After all sections are in:
 
 ## Close
 
-Run the Close gate (`gates/close.md`). Beautiful Person reads `draft.md` from disk and writes the final wiki entry (in human voice, not section-dump format) directly to `~/thoughts/wiki/<slug>.md`, updates `~/thoughts/INDEX.md`, and creates the SFL idea. Git commits are handled by the `thoughts-autocommit` PM2 service.
+Run the Close gate (`gates/close.md`). Beautiful Person reads `draft.md` from disk and writes the final wiki entry (in human voice, not section-dump format) directly to `~/thoughts/wiki/<slug>.md` and updates `~/thoughts/INDEX.md`; the gate then files a draft `sleeper-tasks` task pointing at the article. Git commits are handled by the `thoughts-autocommit` PM2 service.
