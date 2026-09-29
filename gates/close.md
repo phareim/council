@@ -2,7 +2,7 @@
 
 Per goal. Beautiful Person reviews the final outputs and produces external state changes.
 
-Follows the [Subagent return shape](../SKILL.md#subagent-return-shape-disk-first-convention) rule. BP's rewritten commit message and (for RESEARCH/MIXED) the final wiki entry can be large — they are written to disk by BP, not echoed through the Organizer.
+Follows the [Subagent return shape](../SKILL.md#subagent-return-shape-disk-first-convention) rule. BP's rewritten commit message and (for RESEARCH/MIXED) the final write-up can be large — they are written to disk by BP, not echoed through the Organizer.
 
 ## Inputs
 - Goal text + Mode (from `register.md`)
@@ -14,7 +14,7 @@ Follows the [Subagent return shape](../SKILL.md#subagent-return-shape-disk-first
 
 **Before verification**, read the most recent `decisions.md` entry for `<Gn>` (typically the Plan gate's). Beautiful Person should know what trade-offs were already made before suggesting revisions. Do not re-read the full plan or frame role files — the synthesis lines are enough.
 
-1. **Verify every concrete claim with fresh evidence — before any of the closing ceremony.** The rule: no completion claim without having run the command that proves it *in this gate*. "Tests pass" → run the test command, read the exit code and failure count. "The wiki entry is reachable" → curl it. "The deploy landed" → hit the live URL. Claims from implementer subagents, earlier stages, or your own memory of a previous run do not count — an agent's "success" is a claim, not evidence, and prior runs are stale by definition. Keep only the pass/fail summary and (on failure) the first failing command + output in working memory — the full transcript goes to `<run-dir>/close/<Gn>-verification.md`. A failed verification stops the close: fix (within iteration limits) or file and mark accordingly.
+1. **Verify every concrete claim with fresh evidence — before any of the closing ceremony.** The rule: no completion claim without having run the command that proves it *in this gate*. "Tests pass" → run the test command, read the exit code and failure count. "The write-up exists" → read it from disk. "The deploy landed" → hit the live URL. Claims from implementer subagents, earlier stages, or your own memory of a previous run do not count — an agent's "success" is a claim, not evidence, and prior runs are stale by definition. Keep only the pass/fail summary and (on failure) the first failing command + output in working memory — the full transcript goes to `<run-dir>/close/<Gn>-verification.md`. A failed verification stops the close: fix (within iteration limits) or file and mark accordingly.
 
 2. **Stage the inputs BP needs on disk** so BP can read from disk rather than have them passed inline:
    - CODE: `git diff <merge-base>..HEAD > <run-dir>/close/<Gn>-diff.patch` (cumulative diff for the goal). Draft an initial commit message at `<run-dir>/close/<Gn>-commit-msg.txt` (one-line subject + short body — the Organizer's first pass).
@@ -49,26 +49,24 @@ Follows the [Subagent return shape](../SKILL.md#subagent-return-shape-disk-first
    GOAL: <goal text>
    MODE: RESEARCH
    DRAFT FILE: <run-dir>/work/<Gn>/draft.md
-   TARGET WIKI PATH: ~/thoughts/wiki/<slug>.md
-   WIKI CONVENTIONS: ~/thoughts/.claude/skills/wiki-maintenance/SKILL.md
-   (Read the draft and conventions from disk.)
+   TARGET PATH: <run-dir>/close/<Gn>-entry.md
+   (Read the draft from disk.)
 
-   Produce the final wiki entry in human voice (not section-dump). Follow the conventions exactly: one-paragraph summary → sections → ## Sources → ## Related topics, with [[topic-name]] links.
+   Produce the final write-up in human voice (not section-dump): one-paragraph summary → sections → ## Sources.
 
    OUTPUT DISCIPLINE:
-   1. Write the final wiki entry to ~/thoughts/wiki/<slug>.md.
-   2. Update ~/thoughts/INDEX.md to reference it (per the wiki-maintenance conventions).
-   3. If you spot follow-ups (related entries to write, sources to chase), write them to <run-dir>/close/<Gn>-followups.md.
-   4. Return to me ONLY:
+   1. Write the final write-up to <run-dir>/close/<Gn>-entry.md.
+   2. If you spot follow-ups (related entries to write, sources to chase), write them to <run-dir>/close/<Gn>-followups.md.
+   3. Return to me ONLY:
       - Verdict: ship | ship-with-followups | needs-revision
-      - Wiki file path
+      - Write-up file path
       - Followups file path (or "none")
       - ≤60-word rationale
-   Do NOT echo the wiki entry.
+   Do NOT echo the write-up.
    Out-of-scope observations: append one line each to <run-dir>/parking-lot.md — do not put them in your return.
    ```
 
-   **MIXED:** combine both blocks; BP writes both the commit message and the wiki entry to their respective paths.
+   **MIXED:** combine both blocks; BP writes both the commit message and the write-up to their respective paths.
 
 4. **Apply BP's follow-ups** (if any). The Organizer reads `<Gn>-followups.md`, files each as a `sleeper-tasks` task — `todo` + Sleeper if it should run, `--status draft --repo <owner/repo>` if it's polish to park, records the IDs in the Close artifact, and drops the file from working memory.
 
@@ -76,7 +74,7 @@ Follows the [Subagent return shape](../SKILL.md#subagent-return-shape-disk-first
 
 6. **Perform external state changes:**
    - CODE: `git commit -F <run-dir>/close/<Gn>-commit-msg.txt`, then `git push`. The `-F` form means the commit message never enters Organizer context as inline text. The push is part of the gate — per-task commits made during Execute leave the branch ahead of origin, and "done" means pushed, not just committed.
-   - RESEARCH: BP already wrote the wiki entry and updated INDEX.md. The wiki repo is auto-committed by the `thoughts-autocommit` PM2 service (30s debounce) — no manual git needed. Then file a draft task (`sleeper-tasks create --status draft --repo phareim/thoughts`) pointing to the article path.
+   - RESEARCH: BP already wrote the write-up in the run directory. Name its path in the Report. (The `~/thoughts` wiki was retired 2026-09-29; don't write there.)
    - MIXED: do both.
 
 7. **Write `<run-dir>/close/<Gn>.md`** as an index, not a transcript:
@@ -93,11 +91,11 @@ Follows the [Subagent return shape](../SKILL.md#subagent-return-shape-disk-first
    - Verification log:    ./<Gn>-verification.md (if produced)
    - Followups file:      ./<Gn>-followups.md (or "none")
    - Commit hash:         <hash> (if CODE/MIXED)
-   - Wiki path:           ~/thoughts/wiki/<slug>.md (if RESEARCH/MIXED)
+   - Write-up path:       <run-dir>/close/<Gn>-entry.md (if RESEARCH/MIXED)
    - Draft task ID:       <id> (if RESEARCH/MIXED)
    - Followup task IDs:   <list>
    ```
 
 8. **Update `register.md`**: set status to `done` (or `needs-revision` if BP said so AND the Organizer decided to file rather than re-engage; in the file-rather-than-re-engage case it's effectively `done` with a follow-up).
 
-9. **Append a Decision Log entry.** References paths from step 7 — does NOT inline the commit message, diff, wiki entry, or followups list.
+9. **Append a Decision Log entry.** References paths from step 7 — does NOT inline the commit message, diff, write-up, or followups list.

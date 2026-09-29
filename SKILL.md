@@ -196,7 +196,7 @@ Five rules make a council Workflow safe — the first two are load-bearing:
 
 (Verified 2026-09-24: the Agent tool accepts the aliases `haiku`, `sonnet`, `opus`, `fable`. Effort runs `low`→`max`; on Claude Opus 5.5 the API default is `medium`. Update this one line as models change.)
 
-**Deferred tools.** Subagents (and Workflow agents) needing MCP or deferred tools — `sleeper-tasks`, `sfl`, the wiki MCP, `TaskCreate` — must `ToolSearch select:<name>` to load the schema before the first call. Don't assume a deferred tool is callable by name alone.
+**Deferred tools.** Subagents (and Workflow agents) needing MCP or deferred tools — `sleeper-tasks`, `sfl`, `TaskCreate` — must `ToolSearch select:<name>` to load the schema before the first call. Don't assume a deferred tool is callable by name alone.
 
 **Never enter plan mode.** The council is an autonomous executor. `EnterPlanMode` halts all edits and `ExitPlanMode` forces a user approval — breaking both the no-pausing rule and the run. The plan procedure (`procedures/writing-plans.md`) produces plan files without touching plan mode.
 
@@ -219,6 +219,6 @@ When a procedure exists for the phase you're in, follow it — do not improvise 
 ## Important context
 
 - Code changes are committed when finished. The Close gate handles it.
-- The wiki is a git-tracked tree of markdown files at `~/thoughts/wiki/`. Writes are file-based — create or edit the article file and update `~/thoughts/INDEX.md`. The `thoughts-autocommit` PM2 service auto-commits the change after a 30s debounce. Conventions (slug rules, required structure, `[[topic-name]]` links) live in `~/thoughts/.claude/skills/wiki-maintenance/SKILL.md`.
+- The `~/thoughts` wiki was retired 2026-09-29. It is read-only prior work now (searchable with `recall search`); never write to it. A RESEARCH run's final write-up lands in the run directory (`<run-dir>/close/<Gn>-entry.md`).
 - The `sfl` CLI is for SFL ideas; `sleeper-tasks` CLI is for tasks; both are installed.
-- The user is `petter`. Address them as such in any text the user will read (commit messages, wiki entries, the Report).
+- The user is `petter`. Address them as such in any text the user will read (commit messages, write-ups, the Report).

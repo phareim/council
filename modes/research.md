@@ -1,6 +1,6 @@
 # RESEARCH mode
 
-Used when the goal produces a knowledge artifact (wiki entry, write-up) and changes no code.
+Used when the goal produces a knowledge artifact (a write-up) and changes no code.
 
 This pipeline is council-defined end to end.
 
@@ -14,8 +14,8 @@ The plan is a research outline. Write it directly to `<run-dir>/plan/<Gn>.md` wi
 # Research plan — <Gn>: <goal>
 
 ## Target artifact
-- Type: wiki-entry | sfl-idea | chat-note
-- Location: <wiki path / SFL tag / chat thread>
+- Type: write-up | sfl-idea | journal-note
+- Location: <run-dir path / SFL tag / journal>
 - Estimated length: <small (1-2 paragraphs) | medium (1 page) | long (multi-section)>
 
 ## Outline
@@ -140,4 +140,4 @@ After all sections are in:
 
 ## Close
 
-Run the Close gate (`gates/close.md`). Beautiful Person reads `draft.md` from disk and writes the final wiki entry (in human voice, not section-dump format) directly to `~/thoughts/wiki/<slug>.md` and updates `~/thoughts/INDEX.md`; the gate then files a draft `sleeper-tasks` task pointing at the article. Git commits are handled by the `thoughts-autocommit` PM2 service.
+Run the Close gate (`gates/close.md`). Beautiful Person reads `draft.md` from disk and writes the final write-up (in human voice, not section-dump format) to `<run-dir>/close/<Gn>-entry.md`. The `~/thoughts` wiki was retired 2026-09-29 and is not a target.
